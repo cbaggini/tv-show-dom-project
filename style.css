@@ -1,3 +1,35 @@
+body {
+  margin: 0;
+}
+
 #root {
-  color: red;
+  display: flex;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  padding: 0;
+}
+
+section {
+  width: 250px;
+  padding: 2rem;
+}
+
+.title {
+  display: flex;
+  height: 60px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 5px;
+  margin-bottom: 2rem;
+}
+
+footer {
+  display: flex;
+  background-color: lightblue;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 2rem;
 }
