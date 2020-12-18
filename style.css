@@ -1,8 +1,30 @@
 body {
   margin: 0;
+  font-family: sans-serif;
 }
 
 #root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#searchBar {
+  margin: 1rem 2.5rem;
+  display: flex;
+}
+
+#selected {
+  margin-left: 2rem;
+  color: rgb(41, 97, 116);
+}
+
+input {
+  padding: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.episodes {
   display: flex;
   flex-wrap: wrap;
   -webkit-flex-wrap: wrap;
@@ -11,7 +33,7 @@ body {
 
 section {
   width: 250px;
-  padding: 2rem;
+  padding: 2.5rem;
 }
 
 .title {
@@ -23,6 +45,10 @@ section {
   border: 1px solid black;
   border-radius: 5px;
   margin-bottom: 2rem;
+}
+
+h4 {
+  margin: 0.2rem;
 }
 
 footer {
