@@ -1,18 +1,22 @@
 //You can edit ALL of the code here
 function setup() {
   //const allEpisodes = getAllEpisodes(); // to change to get all episodes fetching API
-  let series = 82  
+  let seriesList = getAllShows();
+  seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
+  loadSeriesFilter(seriesList);
+  filterSeries();
+  let series = "https://api.tvmaze.com/shows/82/episodes";
   fetchData(series).then(allEpisodes => {
 	makePageForEpisodes(allEpisodes);
 	search(allEpisodes);
 	loadFilter(allEpisodes);
 	filterEpisode(allEpisodes);
-  }) 
+  })
 }
 
 //Fetch episodes
 async function fetchData(series){
-	let response = await fetch(`https://api.tvmaze.com/shows/${series}/episodes`);
+	let response = await fetch(series);
 	let data = await response.json();
 	data = JSON.stringify(data);
 	data = JSON.parse(data);
@@ -51,10 +55,12 @@ function makePageForEpisodes(episodeList) {
   let str = '';
   episodeList.forEach(function (el) {
 	let episodeCode = `S${String(el.season).padStart(2, '0')}E${String(el.number).padStart(2, '0')}`;
+	let image = el.image ? el.image.medium : "https://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
+	let summary = el.summary ? el.summary : "<p>Summary not available</p>";
 	str += `<section id=${episodeCode}>
 			<div class="title"><h4>${episodeCode} - ${el.name}</h4></div>
-			<img src=${el.image.medium}>
-			<article>${el.summary}</article>
+			<img src=${image}>
+			<article>${summary}</article>
 			</section>`;
   })
   episodes.innerHTML = str;
@@ -76,14 +82,38 @@ function filterEpisode(allEpisodes) {
 	});
 }
 
-// Create dropdown menu
+// Create dropdown menu for episodes
 function loadFilter(episodeList) {
-	let str = "";
+	let str = '<option value="allEpisodes">See all episodes</option>';
 	episodeList.forEach(function(el) {
 		let episodeCode = `S${String(el.season).padStart(2, '0')}E${String(el.number).padStart(2, '0')}`;
 		str += `<option value=${episodeCode}>${episodeCode} - ${el.name}</option>`
 	})
-	document.querySelector("#episodeFilter").innerHTML += str;
+	document.querySelector("#episodeFilter").innerHTML = str;
+}
+
+// Filter series
+function filterSeries() {
+	document.querySelector("#seriesFilter").addEventListener("change", function(e) {
+		const selectedSeriesLink = e.currentTarget.value;
+		//console.log(selectedSeriesLink)
+		fetchData(selectedSeriesLink).then(allEpisodes => {
+			//console.log(allEpisodes)
+			makePageForEpisodes(allEpisodes);
+			search(allEpisodes);
+			loadFilter(allEpisodes);
+			filterEpisode(allEpisodes);
+		}) 
+	});
+}
+
+// Create dropdown menu for series
+function loadSeriesFilter(seriesList) {
+	let str = "";
+	seriesList.forEach(function(el) {
+		str += `<option value= "https://api.tvmaze.com/shows/${el.id}/episodes">${el.name}</option>`
+	})
+	document.querySelector("#seriesFilter").innerHTML += str;
 }
 
 

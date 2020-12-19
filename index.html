@@ -11,8 +11,9 @@
   <body>
     <div id="root">
 		<div id="searchBar">
+			<select name="series" id="seriesFilter"></select>
 			<select name="episodes" id="episodeFilter">
-				<option value="allEpisodes">See all episodes</option>
+				
 			</select>
 			<input type=text placeholder="Your search term here"></input>
 			<p id="selected"></p>
@@ -23,7 +24,8 @@
 	</footer>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
-    <script src="episodes.js"></script>
+	<script src="episodes.js"></script>
+	<script src="shows.js"></script>
 
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>
