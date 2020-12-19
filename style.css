@@ -43,7 +43,7 @@ section {
 
 .title {
   display: flex;
-  height: 60px;
+  min-height: 60px;
   text-align: center;
   justify-content: center;
   align-items: center;

@@ -1,13 +1,24 @@
 //You can edit ALL of the code here
 function setup() {
-  const allEpisodes = getAllEpisodes(); // to change to get all episodes fetching API
-  makePageForEpisodes(allEpisodes);
-  search(allEpisodes);
-  loadFilter(allEpisodes);
-  filterEpisode(allEpisodes);
+  //const allEpisodes = getAllEpisodes(); // to change to get all episodes fetching API
+  let series = 82  
+  fetchData(series).then(allEpisodes => {
+	makePageForEpisodes(allEpisodes);
+	search(allEpisodes);
+	loadFilter(allEpisodes);
+	filterEpisode(allEpisodes);
+  }) 
 }
 
-
+//Fetch episodes
+async function fetchData(series){
+	let response = await fetch(`https://api.tvmaze.com/shows/${series}/episodes`);
+	let data = await response.json();
+	data = JSON.stringify(data);
+	data = JSON.parse(data);
+	console.log(`You queried the API at ${Date()}`);
+	return data;
+  }
 
 // Search episodes
 function search(allEpisodes) {
