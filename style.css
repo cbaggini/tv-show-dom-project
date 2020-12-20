@@ -13,7 +13,8 @@ option {
   padding: 20px;
 }
 
-#searchBar {
+#searchBar,
+#seriesSearchBar {
   margin: 1rem 2.5rem;
   display: flex;
 }
@@ -23,8 +24,15 @@ option {
   color: rgb(41, 97, 116);
 }
 
-input,
-#episodeFilter {
+h1 {
+  text-align: center;
+}
+
+#seriesSearchInput,
+#selectedSeries,
+#searchInput,
+#episodeFilter,
+#seriesFilter {
   margin-left: 2rem;
   padding-left: 3px;
 }
@@ -36,9 +44,30 @@ input,
   padding: 0;
 }
 
-section {
+.episodeSection {
   width: 250px;
   padding: 2.5rem;
+}
+
+.seriesClass {
+  box-shadow: 5px 10px lightgray;
+  border-radius: 25px;
+  margin: 2rem;
+}
+
+.seriesDescription {
+  display: flex;
+  margin-right: 2rem;
+  padding: 0.5rem 2rem;
+}
+
+.seriesDescription > img {
+  height: 250px;
+}
+
+.seriesArticle {
+  padding: 2rem;
+  width: 50%;
 }
 
 .title {
