@@ -1,17 +1,38 @@
 //You can edit ALL of the code here
 function setup() {
-  //const allEpisodes = getAllEpisodes(); // to change to get all episodes fetching API
   let seriesList = getAllShows();
   seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
-  loadSeriesFilter(seriesList);
-  filterSeries();
   let series = "https://api.tvmaze.com/shows/82/episodes";
-  fetchData(series).then(allEpisodes => {
-	makePageForEpisodes(allEpisodes);
-	search(allEpisodes);
-	loadFilter(allEpisodes);
-	filterEpisode(allEpisodes);
-  })
+  loadEpisodeView(series, seriesList);
+}
+
+// Load episode view
+function loadEpisodeView(series, seriesList) {
+	createSearchBar(seriesList);
+	fetchData(series).then(allEpisodes => {	
+		makePageForEpisodes(allEpisodes);
+		addSearchFunction(allEpisodes);
+		loadFilter(allEpisodes);
+		filterEpisode(allEpisodes);
+	})
+}
+
+// Create search bar
+function createSearchBar(seriesList) {
+	const oldSearch = document.getElementById("searchBar");
+	if (oldSearch) {
+		oldSearch.remove();
+	}
+	const rootElem = document.getElementById("root");
+	let searchBar = document.createElement("div");
+	searchBar.id = "searchBar";
+	searchBar.innerHTML = `<select name="series" id="seriesFilter"></select>
+			<select name="episodes" id="episodeFilter"></select>
+			<input id="searchInput" type=text placeholder="Your search term here"></input>
+			<p id="selected"></p>`
+	rootElem.insertBefore(searchBar, rootElem.firstChild);
+	loadSeriesFilter(seriesList);
+    filterSeries(seriesList);
 }
 
 //Fetch episodes
@@ -25,8 +46,8 @@ async function fetchData(series){
   }
 
 // Search episodes
-function search(allEpisodes) {
-	document.querySelector("input").addEventListener("input", function(event) {
+function addSearchFunction(allEpisodes) {
+	document.querySelector("#searchInput").addEventListener("input", function(event) {
 		let search = event.target.value;
 		if (search === "") {
 			makePageForEpisodes(allEpisodes);
@@ -34,7 +55,7 @@ function search(allEpisodes) {
 			selected.innerHTML = "";
 		} else {
 			let newEpisodes = allEpisodes.filter(function(el) {
-				return el.name.toLowerCase().includes(search.toLowerCase()) || el.summary.toLowerCase().includes(search.toLowerCase())
+				return (el.name ? el.name.toLowerCase().includes(search.toLowerCase()) : false) || (el.summary ? el.summary.toLowerCase().includes(search.toLowerCase()) : false)
 			})
 			let selected = document.querySelector("#selected");
 			selected.innerHTML = `Displaying ${newEpisodes.length}/${allEpisodes.length} episodes`;
@@ -75,6 +96,10 @@ function filterEpisode(allEpisodes) {
 		if (selectedEpisode === "allEpisodes") {
 			makePageForEpisodes(allEpisodes);
 		} else {
+			makePageForEpisodes(allEpisodes);
+			let selected = document.querySelector("#selected");
+			selected.innerHTML = "";
+			document.querySelector("input").value = "";
 			let showEpisode = document.querySelector(`#${selectedEpisode}`);
 			document.querySelectorAll("section").forEach(el => el.style.display = "none");
 			showEpisode.style.display = "block";
@@ -93,17 +118,11 @@ function loadFilter(episodeList) {
 }
 
 // Filter series
-function filterSeries() {
+function filterSeries(seriesList) {
 	document.querySelector("#seriesFilter").addEventListener("change", function(e) {
 		const selectedSeriesLink = e.currentTarget.value;
 		//console.log(selectedSeriesLink)
-		fetchData(selectedSeriesLink).then(allEpisodes => {
-			//console.log(allEpisodes)
-			makePageForEpisodes(allEpisodes);
-			search(allEpisodes);
-			loadFilter(allEpisodes);
-			filterEpisode(allEpisodes);
-		}) 
+		loadEpisodeView(selectedSeriesLink, seriesList);
 	});
 }
 
