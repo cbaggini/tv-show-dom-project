@@ -5,6 +5,20 @@ function setup() {
   loadSeriesView(seriesList);
 }
 
+function get_average_rgb(img) {
+    var context = document.createElement('canvas').getContext('2d');
+    if (typeof img == 'string') {
+        var src = img;
+        img = new Image;
+        img.setAttribute('crossOrigin', ''); 
+		img.src = src;
+	}
+	img.setAttribute('crossOrigin', ''); 
+    context.imageSmoothingEnabled = true;
+	context.drawImage(img, 0, 0, 1, 1);
+    return context.getImageData(0, 0, 1, 1).data.slice(0,3);
+}
+
 // Load series view
 function loadSeriesView(seriesList) {
 	const rootElem = document.getElementById("root");
@@ -26,7 +40,7 @@ function makePageForShows(seriesList) {
   series.id = "series";
   let str = '';
   seriesList.forEach(function (el) {
-	let image = el.image ? el.image.medium : "https://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
+	let image = el.image ? el.image.medium : "https://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
 	let summary = el.summary ? el.summary : "<p>Summary not available</p>";
 	str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${el.id}/episodes">
 			<div class="seriesTitle"><h1>${el.name}</h1></div>
@@ -44,6 +58,15 @@ function makePageForShows(seriesList) {
   })
   series.innerHTML = str;
   rootElem.append(series);
+  document.querySelectorAll("img").forEach(img => {
+	  if (img.src.slice(0,13) === "http://static") {
+		let color = get_average_rgb(img);
+		let c1 = color[0] + 80 <= 255 ? color[0] + 80 : 255;
+		let c2 = color[1] + 80 <= 255 ? color[1] + 80 : 255;
+		let c3 = color[2] + 80 <= 255 ? color[2] + 80 : 255;
+		color = [c1,c2,c3];
+		img.parentElement.parentElement.style.backgroundColor = `rgb(${c1},${c2},${c3})` }
+	  });
 }
 
 // When user clicks on series, they will go to episode view
@@ -51,28 +74,29 @@ function addEpisodeClick(seriesList) {
 	document.querySelectorAll(".seriesClass").forEach(
 		el => el.addEventListener("click", function() {
 			let series = el.id;
-			loadEpisodeView(series, seriesList);
+			let color = el.style.backgroundColor;
+			loadEpisodeView(series, color);
 		})	
 	)
 }
 
 // Load episode view
-function loadEpisodeView(series, seriesList) {
+function loadEpisodeView(series, color) {
 	const seriesView = document.getElementById("series");
 	seriesView.style.display = "none";
 	const seriesSearch = document.getElementById("seriesSearchBar");
 	seriesSearch.style.display = "none";
-	createSearchBar(seriesList);
+	createSearchBar();
 	fetchData(series).then(allEpisodes => {	
-		makePageForEpisodes(allEpisodes);
-		addSearchFunction(allEpisodes);
+		makePageForEpisodes(allEpisodes, color);
+		addSearchFunction(allEpisodes, color);
 		loadFilter(allEpisodes);
-		filterEpisode(allEpisodes);
+		filterEpisode(allEpisodes, color);
 	})
 }
 
 // Create search bar for episodes
-function createSearchBar(seriesList) {
+function createSearchBar() {
 	const oldSearch = document.getElementById("searchBar");
 	if (oldSearch) {
 		oldSearch.remove();
@@ -86,8 +110,6 @@ function createSearchBar(seriesList) {
 			<p id="selected"></p>`
 	rootElem.insertBefore(searchBar, rootElem.firstChild);
 	backToSeries();
-	// loadSeriesFilter(seriesList);
-    // filterSeries(seriesList);
 }
 
 // Create search bar for series
@@ -156,11 +178,11 @@ async function fetchData(series){
   }
 
 // Search episodes
-function addSearchFunction(allEpisodes) {
+function addSearchFunction(allEpisodes, color) {
 	document.querySelector("#searchInput").addEventListener("input", function(event) {
 		let search = event.target.value;
 		if (search === "") {
-			makePageForEpisodes(allEpisodes);
+			makePageForEpisodes(allEpisodes,color);
 			let selected = document.querySelector("#selected");
 			selected.innerHTML = "";
 		} else {
@@ -169,13 +191,13 @@ function addSearchFunction(allEpisodes) {
 			})
 			let selected = document.querySelector("#selected");
 			selected.innerHTML = `Displaying ${newEpisodes.length}/${allEpisodes.length} episodes`;
-			makePageForEpisodes(newEpisodes);
+			makePageForEpisodes(newEpisodes, color);
 		}
 	})
 }
 
 // Load episodes
-function makePageForEpisodes(episodeList) {
+function makePageForEpisodes(episodeList, color) {
   const rootElem = document.getElementById("root");
   let existingEpisodes = document.querySelector(".episodes");
   if (existingEpisodes) {
@@ -191,22 +213,26 @@ function makePageForEpisodes(episodeList) {
 	str += `<section id=${episodeCode} class="episodeSection">
 			<div class="title"><h4>${episodeCode} - ${el.name}</h4></div>
 			<img class="episodeImage" src=${image}>
-			<article>${summary}</article>
+			<article class="episodeArticle">${summary}</article>
 			</section>`;
   })
   episodes.innerHTML = str;
+  //episodes.style.backgroundColor = `rgb($)`
   rootElem.append(episodes);
+  document.querySelectorAll(".episodeSection").forEach(el => el.style.backgroundColor = color);
+  document.querySelectorAll(".title").forEach(el => el.style.backgroundColor = "white");
+  document.querySelector("#searchBar").style.backgroundColor = color;
 }
 
 // Filter episodes
-function filterEpisode(allEpisodes) {
+function filterEpisode(allEpisodes, color) {
 	document.querySelector("#episodeFilter").addEventListener("change", function(e) {
 		let selectedEpisode = e.currentTarget.value;
 		//makePageForEpisodes(selectedEpisode);
 		if (selectedEpisode === "allEpisodes") {
-			makePageForEpisodes(allEpisodes);
+			makePageForEpisodes(allEpisodes, color);
 		} else {
-			makePageForEpisodes(allEpisodes);
+			makePageForEpisodes(allEpisodes, color);
 			let selected = document.querySelector("#selected");
 			selected.innerHTML = "";
 			document.querySelector("input").value = "";

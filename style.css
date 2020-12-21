@@ -15,8 +15,13 @@ option {
 
 #searchBar,
 #seriesSearchBar {
-  margin: 1rem 2.5rem;
+  padding: 1rem 2.5rem;
   display: flex;
+  background-color: rgb(138, 76, 76);
+}
+
+.seriesTitle {
+  padding-top: 0.1rem;
 }
 
 #selected {
@@ -46,7 +51,17 @@ h1 {
 
 .episodeSection {
   width: 250px;
-  padding: 2.5rem;
+  padding: 0.5rem;
+  margin: 2rem;
+  border-radius: 5px;
+}
+
+.episodeArticle {
+  padding: 0.5rem;
+}
+
+.episodeImage {
+  margin-bottom: 0;
 }
 
 .seriesClass {
