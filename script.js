@@ -3,8 +3,10 @@ function setup() {
   let seriesList = getAllShows();
   seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
   loadSeriesView(seriesList);
+  document.getElementById("alphabetic").checked = true;
 }
 
+// Get average color of image to set div background
 function get_average_rgb(img) {
     var context = document.createElement('canvas').getContext('2d');
     if (typeof img == 'string') {
@@ -40,7 +42,7 @@ function makePageForShows(seriesList) {
   series.id = "series";
   let str = '';
   seriesList.forEach(function (el) {
-	let image = el.image ? el.image.medium : "https://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
+	let image = el.image ? el.image.medium : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
 	let summary = el.summary ? el.summary : "<p>Summary not available</p>";
 	str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${el.id}/episodes">
 			<div class="seriesTitle"><h1>${el.name}</h1></div>
@@ -124,12 +126,38 @@ function createSeriesSearchBar(seriesList) {
 	searchBar.innerHTML = `<p>Filtering for </p>
 			<input id="seriesSearchInput" type=text placeholder="Your search term here"></input>
 			<p id="selectedSeries">found ${seriesList.length} shows</p>
-			<select name="series" id="seriesFilter"></select>`			
-
+			<select name="series" id="seriesFilter"></select>
+			<input type="radio" id="alphabetic" name="sort" value="alphabetic">
+			<label for="alphabetic">Sort by name</label><br>
+			<input type="radio" id="rating" name="sort" value="rating">
+			<label for="rating">Sort by rating</label> `			
 	rootElem.insertBefore(searchBar, rootElem.firstChild);
-	//backToSeries(seriesList);
 	loadSeriesFilter(seriesList);
-    filterSeries(seriesList);
+	filterSeries();
+	alphabeticSort(seriesList);
+	ratingSort(seriesList);
+}
+
+// Add event listener to sort series by name
+function alphabeticSort(seriesList) {
+	document.getElementById("alphabetic").addEventListener("change", function() {
+		document.getElementById("alphabetic").checked = true;
+		document.getElementById("rating").checked = false;
+		seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
+		makePageForShows(seriesList);
+		addEpisodeClick(seriesList);
+	})
+}
+
+// Add event listener to sort series by rating
+function ratingSort(seriesList) {
+	document.getElementById("rating").addEventListener("change", function() {
+		document.getElementById("alphabetic").checked = false;
+		document.getElementById("rating").checked = true;
+		seriesList = seriesList.sort((a,b) => (a.rating.average < b.rating.average) ? 1 : ((b.rating.average < a.rating.average) ? -1 : 0)); 
+		makePageForShows(seriesList);
+		addEpisodeClick(seriesList);
+	})
 }
 
 // Search series
@@ -142,6 +170,8 @@ function addSeriesSearchFunction(seriesList) {
 			loadSeriesFilter(seriesList);
 			let selected = document.querySelector("#selectedSeries");
 			selected.innerHTML = `found ${seriesList.length} shows`;
+			alphabeticSort(seriesList);
+			ratingSort(seriesList);
 		} else {
 			let newSeriesList = seriesList.filter(function(el) {
 				return (el.name ? el.name.toLowerCase().includes(search.toLowerCase()) : false) || (el.summary ? el.summary.toLowerCase().includes(search.toLowerCase()) : false)
@@ -151,6 +181,8 @@ function addSeriesSearchFunction(seriesList) {
 			makePageForShows(newSeriesList);
 			addEpisodeClick(newSeriesList);
 			loadSeriesFilter(newSeriesList);
+			alphabeticSort(newSeriesList);
+			ratingSort(newSeriesList);
 		}
 	})
 }
@@ -167,15 +199,17 @@ function backToSeries() {
 	})	
 }
 
-//Fetch episodes
 async function fetchData(series){
-	let response = await fetch(series);
-	let data = await response.json();
-	data = JSON.stringify(data);
-	data = JSON.parse(data);
+	let result;
+	await fetch(series)
+		.then(response => response.json())
+		.then(data => JSON.stringify(data))
+		.then(data => JSON.parse(data))
+		.then(data => result = data)
+		.catch(error => console.log(error));
 	console.log(`You queried the API at ${Date()}`);
-	return data;
-  }
+	return result;
+}
 
 // Search episodes
 function addSearchFunction(allEpisodes, color) {
@@ -208,7 +242,7 @@ function makePageForEpisodes(episodeList, color) {
   let str = '';
   episodeList.forEach(function (el) {
 	let episodeCode = `S${String(el.season).padStart(2, '0')}E${String(el.number).padStart(2, '0')}`;
-	let image = el.image ? el.image.medium : "https://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
+	let image = el.image ? el.image.medium : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
 	let summary = el.summary ? el.summary : "<p>Summary not available</p>";
 	str += `<section id=${episodeCode} class="episodeSection">
 			<div class="title"><h4>${episodeCode} - ${el.name}</h4></div>
@@ -254,11 +288,12 @@ function loadFilter(episodeList) {
 }
 
 // Filter series
-function filterSeries(seriesList) {
+function filterSeries() {
 	document.querySelector("#seriesFilter").addEventListener("change", function(e) {
 		const selectedSeriesLink = e.currentTarget.value;
-		//console.log(selectedSeriesLink)
-		loadEpisodeView(selectedSeriesLink, seriesList); 
+		const color = document.getElementById(`${selectedSeriesLink}`).style.backgroundColor;
+		console.log(color);
+		loadEpisodeView(selectedSeriesLink, color); 
 	});
 }
 
