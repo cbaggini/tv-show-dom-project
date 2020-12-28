@@ -3,7 +3,8 @@ body {
   font-family: sans-serif;
 }
 
-#root {
+#root,
+#series {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -60,6 +61,12 @@ label {
   padding: 0;
 }
 
+.episodes > h1 {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
+
 .episodeSection {
   width: 250px;
   padding: 0.5rem;
@@ -76,6 +83,8 @@ label {
 }
 
 .seriesClass {
+  display: flex;
+  flex-direction: column;
   box-shadow: 5px 10px lightgray;
   border-radius: 25px;
   margin: 2rem;
@@ -105,6 +114,7 @@ label {
   border: 1px solid black;
   border-radius: 5px;
   margin-bottom: 2rem;
+  background-color: white;
 }
 
 h4 {
