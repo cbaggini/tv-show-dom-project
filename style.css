@@ -63,8 +63,16 @@ label {
 
 .episodes > h1 {
   width: 100%;
-  margin-top: 2rem;
-  margin-bottom: 0;
+  margin: 2rem;
+}
+
+.paginate {
+  width: 100%;
+}
+
+.paginationBtn {
+  margin-left: 2rem;
+  padding: 0.5rem;
 }
 
 .episodeSection {

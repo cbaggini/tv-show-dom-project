@@ -245,7 +245,11 @@ function addSearchFunction() {
 		let episodes = document.querySelectorAll(".episodeSection");
 		if (search === "") {
 			for (let i=0; i<episodes.length; i++) {
-				episodes[i].style.display = "block";
+				episodes[i].style.display = "none";
+			}
+			let season1 = document.querySelectorAll(`[id^="S01"]`);
+			for (let i=0; i<season1.length; i++) {
+				season1[i].style.display = "block";
 			}
 			let selected = document.querySelector("#selected");
 			selected.innerHTML = "";
@@ -276,6 +280,12 @@ function makePageForEpisodes(episodeList, color, seriesName) {
   const episodes = document.createElement("div");
   episodes.classList = "episodes";
   let str = `<h1>${seriesName}</h1>`;
+  const uniqueSeries = episodeList.map(el => String(el.season).padStart(2, '0')).filter((value, index, arr) => arr.indexOf(value) === index);
+  str += `<div class="paginate">`
+  for (let i=0; i<uniqueSeries.length; i++) {
+	  str += `<button type="button" class="paginationBtn" style="background-color: ${color}; border: 1px solid ${color}"id="${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
+  }
+  str += "</div>";
   for (let i=0; i<episodeList.length; i++) {
 	let episodeCode = `S${String(episodeList[i].season).padStart(2, '0')}E${String(episodeList[i].number).padStart(2, '0')}`;
 	let image = episodeList[i].image ? episodeList[i].image.medium : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
@@ -291,8 +301,25 @@ function makePageForEpisodes(episodeList, color, seriesName) {
   let eps = document.querySelectorAll(".episodeSection");
   for (let i=0; i<eps.length; i++) {
 	  eps[i].style.backgroundColor = color;
+	  eps[i].style.display = "none";
   }
   document.querySelector("#searchBar").style.backgroundColor = color;
+  let season1 = document.querySelectorAll(`[id^="S01"]`);
+  for (let i=0; i<season1.length; i++) {
+	season1[i].style.display = "block";
+  }
+  for (let i=0; i<uniqueSeries.length; i++) {
+	document.getElementById(`${uniqueSeries[i]}`).addEventListener("click", function() {
+	let eps = document.querySelectorAll(".episodeSection");
+	for (let i=0; i<eps.length; i++) {
+		eps[i].style.display = "none";
+	}
+	let episodeSeason = document.querySelectorAll(`[id^="S${uniqueSeries[i]}"]`);
+	for (let i=0; i<episodeSeason.length; i++) {
+		episodeSeason[i].style.display = "block";
+	}
+	})
+  }
 }
 
 // Filter episodes
@@ -302,7 +329,11 @@ function filterEpisode() {
 		let episodes = document.querySelectorAll(".episodeSection");
 		if (selectedEpisode === "allEpisodes") {
 			for (let i=0; i<episodes.length; i++) {
-				episodes[i].style.display = "block";
+				episodes[i].style.display = "none";
+			}
+			let season1 = document.querySelectorAll(`[id^="S01"]`);
+			for (let i=0; i<season1.length; i++) {
+				season1[i].style.display = "block";
 			}
 		} else {
 			let selected = document.querySelector("#selected");
