@@ -1,9 +1,50 @@
 // Setup initial view (series list)
 function setup() {
-  let seriesList = getAllShows();
-  seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
-  loadSeriesView(seriesList);
-  document.getElementById("alphabetic").checked = true;
+	let seriesList = getAllShows();
+	seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
+	loadSeriesView(seriesList);
+	document.getElementById("alphabetic").checked = true;
+	// let sentinel = document.querySelector(".sentinel");
+	// Callback function for infinite scroll observer
+	// function callback(entries) {
+	// 	entries.forEach(entry => {
+	// 	if (entry.isIntersecting) {
+	// 		intersectionObserver.unobserve(sentinel);
+	// 		infiniteScroll();
+	// 		sentinel = document.querySelector(".sentinel");
+	// 		intersectionObserver.observe(sentinel);
+	// 	}
+	// 	});
+	// }
+	// const options = {
+	// 	rootMargin: '-30px',
+	// 	threshold: 1
+	// }
+	// var intersectionObserver = new IntersectionObserver(callback, options);
+	// intersectionObserver.observe(sentinel);
+}
+
+
+
+// Implement infinite scroll of shows
+function infiniteScroll() {
+	let sentinel = document.querySelector(".sentinel");
+	if (sentinel) {
+		sentinel.classList = "seriesClass";
+	}
+	let shows = document.querySelectorAll(".seriesClass");
+	let counter = 0;
+	let s = 0;
+	while (counter<10 && s<shows.length) {
+		if (shows[s].style.display === "none") {
+			shows[s].style.display = "flex";
+			counter++;
+		}
+		if (counter===10) {
+			shows[s].classList += " sentinel";
+		}
+		s++;
+	}
 }
 
 // Get average color of image to set div background
@@ -30,7 +71,7 @@ function loadSeriesView(seriesList) {
 	addEpisodeClick();
 	createSeriesSearchBar(seriesList);
 	addSeriesSearchFunction(seriesList);
-	infiniteScroll();
+	//infiniteScroll();
 }
 
 // Load series list
@@ -46,7 +87,8 @@ function makePageForShows(seriesList) {
   for (let i=0; i<seriesList.length; i++) {
 	  let image = seriesList[i].image ? seriesList[i].image.medium : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
 	  let summary = seriesList[i].summary ? seriesList[i].summary : "<p>Summary not available</p>";
-	  str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${seriesList[i].id}/episodes" style="display: none;">
+	  // Add style="display: none;" for infinite scroll
+	  str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${seriesList[i].id}/episodes">
 			<div class="seriesTitle"><h1>${seriesList[i].name}</h1></div>
 			<div class="seriesDescription">
 				<img src=${image}>
@@ -64,27 +106,7 @@ function makePageForShows(seriesList) {
   rootElem.append(series);
 }
 
-// Implement infinite scroll of shows
-function infiniteScroll() {
-	let sentinel = document.querySelector(".sentinel");
-	if (sentinel) {
-		sentinel.classList = "seriesClass";
-	}
-	let shows = document.querySelectorAll(".seriesClass");
-	let counter = 0;
-	let s = 0;
-	while (counter<10 && s<shows.length) {
-		console.log(counter)
-		if (shows[s].style.display === "none") {
-			shows[s].style.display = "flex";
-			counter++;
-		}
-		if (counter===10) {
-			shows[s].classList += " sentinel";
-		}
-		s++;
-	}
-}
+
 
 // Add background color to series div
 function addColor() {
