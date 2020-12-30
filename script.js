@@ -106,8 +106,6 @@ function makePageForShows(seriesList) {
   rootElem.append(series);
 }
 
-
-
 // Add background color to series div
 function addColor() {
 	let img = document.querySelectorAll("img");
@@ -117,7 +115,6 @@ function addColor() {
 			let c1 = color[0] + 80 <= 255 ? color[0] + 80 : 255;
 			let c2 = color[1] + 80 <= 255 ? color[1] + 80 : 255;
 			let c3 = color[2] + 80 <= 255 ? color[2] + 80 : 255;
-			color = [c1,c2,c3];
 			img[i].parentElement.parentElement.style.backgroundColor = `rgb(${c1},${c2},${c3})`
 		}
 	}
@@ -315,6 +312,29 @@ function addSearchFunction() {
 	})
 }
 
+// Read more function
+function readMore() {
+	let lnk = event.target;
+	lnk.style.display = "none";
+	let section = lnk.parentNode;
+	let readLess = section.lastElementChild;
+	readLess.style.display = "block";
+	let span = section.children[4];
+	section.children[2].innerText += span.innerText;
+}
+
+// Read less function
+function readLess() {
+	let lnk = event.target;
+	lnk.style.display = "none";
+	let section = lnk.parentNode;
+	let readMore = section.children[3];
+	readMore.style.display = "block";
+	let article = section.children[2];
+	let maxLength = 200;
+	article.innerText = article.innerText.slice(0,article.innerText.indexOf(' ', maxLength));
+}
+
 // Load episodes
 function makePageForEpisodes(episodeList, color, seriesName) {
   const rootElem = document.getElementById("root");
@@ -335,11 +355,20 @@ function makePageForEpisodes(episodeList, color, seriesName) {
 	let episodeCode = `S${String(episodeList[i].season).padStart(2, '0')}E${String(episodeList[i].number).padStart(2, '0')}`;
 	let image = episodeList[i].image ? episodeList[i].image.medium : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
 	let summary = episodeList[i].summary ? episodeList[i].summary : "<p>Summary not available</p>";
+	let maxLength = 200;
 	str += `<section id=${episodeCode} class="episodeSection">
 			<div class="title"><h4>${episodeCode} - ${episodeList[i].name}</h4></div>
-			<img class="episodeImage" src=${image}>
-			<article class="episodeArticle">${summary}</article>
+			<img class="episodeImage" src=${image}>`;
+	if (summary.length <= maxLength) {
+		str+= `<article class="episodeArticle">${summary}</article>
 			</section>`;
+	} else {
+		str += `<article class="episodeArticle">${summary.slice(0,summary.indexOf(' ', maxLength))}</article>
+			<p class="read" onclick="readMore()">Read more</p>
+			<span style="display: none;">${summary.slice(summary.indexOf(' ', maxLength))}</span>
+			<p class="read" onclick="readLess()" style="display: none;">Read less</p>
+			</section>`;
+	}
   }
   episodes.innerHTML = str;
   rootElem.append(episodes);

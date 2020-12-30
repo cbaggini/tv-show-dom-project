@@ -90,6 +90,11 @@ label {
   margin-bottom: 0;
 }
 
+.read {
+  text-align: center;
+  text-decoration: underline;
+}
+
 .seriesClass {
   display: flex;
   flex-direction: column;
