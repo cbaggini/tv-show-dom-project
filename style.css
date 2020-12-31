@@ -128,7 +128,8 @@ label {
   text-decoration: underline;
 }
 
-.seriesClass {
+.seriesClass,
+.creditsClass {
   display: flex;
   flex-direction: column;
   box-shadow: 5px 10px lightgray;
