@@ -129,20 +129,65 @@ function addCast(series, color) {
 		const maxLen = allCast.length > 9 ? 9 : allCast.length;
 		let str = "<h2>Cast</h2><div>";
 		for(let i=0; i<maxLen; i++) {
-			str += `<p class="actors"><a onclick = "getCredit(${allCast[i].person.id})">${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`
+			str += `<p class="actors"><a onclick = "getCredit('${allCast[i].person.id}','${allCast[i].person.name}')">${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`
 		}
 		str += "</div>";
 		article.innerHTML = str;
 	});
 }
 
+// Remove duplicates from array of objects based on a property
+function removeDuplicatesBy(keyFn, array) {
+	let mySet = new Set();
+	return array.filter(function(x) {
+		let key = keyFn(x), isNew = !mySet.has(key);
+		if (isNew) mySet.add(key);
+		return isNew;
+	});
+}
+
 // Create cast credit view
-function getCredit(castId) {
+function getCredit(castId, castName) {
+	// make episode view invisible
+	const episodeView = document.querySelector(".episodes");
+	episodeView.style.display = "none";
+	const searchEpisode = document.querySelector("#searchBar");
+	searchEpisode.style.display = "none";
+	// if another credit already present, delete it
+	const rootElem = document.getElementById("root");
+	const oldCredits = document.getElementById("credits");
+	if (oldCredits) {
+		oldCredits.remove();
+	}
+	// create and populate credit view (using all series and not only the ones in the initial series list)
+	const creditDiv = document.createElement("div");
+	creditDiv.id = "credits";
+	let str = `<h1>${castName}</h1>`;
 	fetchData(`http://api.tvmaze.com/people/${castId}/castcredits?embed=show`).then(credits => {
-		console.log(credits);
-		// make episode view invisible
-		// create cast credit view similar to show view (actor name on top)
-		// can re-use addColor and addClick functions?
+		credits = removeDuplicatesBy(x => x._embedded.show.id, credits);
+		for (let i=0; i<credits.length; i++) {
+			let image = credits[i]._embedded.show.image ? credits[i]._embedded.show.image.medium : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
+			let summary = credits[i]._embedded.show.summary ? credits[i]._embedded.show.summary : "<p>Summary not available</p>";
+			// Add style="display: none;" for infinite scroll
+			str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${credits[i]._embedded.show.id}/episodes">
+					<div class="seriesTitle"><h1>${credits[i]._embedded.show.name}</h1></div>
+					<div class="seriesDescription">
+						<img src=${image}>
+						<article class="seriesArticle"><p>${summary}</p></article>
+						<aside>
+							<p><strong>Rated:&nbsp;</strong>${credits[i]._embedded.show.rating.average}</p>
+							<p><strong>Genres:&nbsp;</strong>${credits[i]._embedded.show.genres.join(" | ")}</p>
+							<p><strong>Status:&nbsp;</strong>${credits[i]._embedded.show.status}</p>
+							<p><strong>Runtime:&nbsp;</strong>${credits[i]._embedded.show.runtime}</p>
+						</aside>
+					</div>
+					</section>`;
+
+		}
+		creditDiv.innerHTML = str;
+		rootElem.append(creditDiv);
+		addColor();
+		addEpisodeClick();
 	})
 }
 
@@ -163,6 +208,10 @@ function addEpisodeClick() {
 function loadEpisodeView(series, color, seriesName) {
 	const seriesView = document.getElementById("series");
 	seriesView.style.display = "none";
+	const creditView = document.getElementById("credits");
+	if (creditView) {
+		creditView.style.display = "none";
+	}
 	const seriesSearch = document.getElementById("seriesSearchBar");
 	seriesSearch.style.display = "none";
 	createSearchBar();

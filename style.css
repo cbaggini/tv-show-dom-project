@@ -67,6 +67,7 @@ label {
 }
 
 .cast {
+  width: 100%;
   margin-bottom: 2rem;
   margin-left: 2rem;
   margin-right: 2rem;
@@ -89,6 +90,13 @@ label {
   color: darkgrey;
   text-decoration: underline;
   cursor: pointer;
+}
+
+#credits > h1 {
+  border: 2px solid black;
+  margin: 2rem;
+  padding: 1rem;
+  border-radius: 10px;
 }
 
 .paginate {
