@@ -66,6 +66,31 @@ label {
   margin: 2rem;
 }
 
+.cast {
+  margin-bottom: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+.cast > h2 {
+  text-align: center;
+}
+
+.cast > div {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.actors {
+  width: 33%;
+  text-align: center;
+}
+
+.actors > a:hover {
+  color: darkgrey;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .paginate {
   width: 100%;
 }

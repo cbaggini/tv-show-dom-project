@@ -92,7 +92,7 @@ function makePageForShows(seriesList) {
 			<div class="seriesTitle"><h1>${seriesList[i].name}</h1></div>
 			<div class="seriesDescription">
 				<img src=${image}>
-				<article class="seriesArticle">${summary}</article>
+				<article class="seriesArticle"><p>${summary}</p></article>
 				<aside>
 					<p><strong>Rated:&nbsp;</strong>${seriesList[i].rating.average}</p>
 					<p><strong>Genres:&nbsp;</strong>${seriesList[i].genres.join(" | ")}</p>
@@ -120,6 +120,32 @@ function addColor() {
 	}
 }
 
+// Add cast listing to series page
+function addCast(series, color) {
+	let article = document.querySelector(".cast");
+	article.style.backgroundColor = color;
+	const seriesId = series.slice(29,series.indexOf("/episodes"));
+	fetchData(`http://api.tvmaze.com/shows/${seriesId}/cast`).then(allCast => {
+		const maxLen = allCast.length > 9 ? 9 : allCast.length;
+		let str = "<h2>Cast</h2><div>";
+		for(let i=0; i<maxLen; i++) {
+			str += `<p class="actors"><a onclick = "getCredit(${allCast[i].person.id})">${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`
+		}
+		str += "</div>";
+		article.innerHTML = str;
+	});
+}
+
+// Create cast credit view
+function getCredit(castId) {
+	fetchData(`http://api.tvmaze.com/people/${castId}/castcredits?embed=show`).then(credits => {
+		console.log(credits);
+		// make episode view invisible
+		// create cast credit view similar to show view (actor name on top)
+		// can re-use addColor and addClick functions?
+	})
+}
+
 // When user clicks on series, they will go to episode view
 function addEpisodeClick() {
 	let seriesList = document.querySelectorAll(".seriesClass");
@@ -145,6 +171,7 @@ function loadEpisodeView(series, color, seriesName) {
 		addSearchFunction();
 		loadFilter(allEpisodes);
 		filterEpisode();
+		addCast(series, color);
 	})
 }
 
@@ -344,7 +371,7 @@ function makePageForEpisodes(episodeList, color, seriesName) {
   }
   const episodes = document.createElement("div");
   episodes.classList = "episodes";
-  let str = `<h1>${seriesName}</h1>`;
+  let str = `<h1>${seriesName}</h1> <article class="cast"></article>`;
   const uniqueSeries = episodeList.map(el => String(el.season).padStart(2, '0')).filter((value, index, arr) => arr.indexOf(value) === index);
   str += `<div class="paginate">`
   for (let i=0; i<uniqueSeries.length; i++) {
