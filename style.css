@@ -86,9 +86,12 @@ label {
   text-align: center;
 }
 
+.actors > a {
+  text-decoration: underline;
+}
+
 .actors > a:hover {
   color: darkgrey;
-  text-decoration: underline;
   cursor: pointer;
 }
 

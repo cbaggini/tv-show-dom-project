@@ -79,7 +79,7 @@ function loadSeriesView(seriesList) {
 		addColor();
 		let whiteDivs = [...document.querySelectorAll('.seriesClass')].filter(el => el.style.backgroundColor === "rgb(80, 80, 80)");
 		console.log("changed colors");
-		if (whiteDivs.length <= 4) {
+		if (whiteDivs.length <= 5) {
 			console.log("finished loading colors");
 			clearInterval(ColorTimer);
 		}
@@ -101,7 +101,7 @@ function makePageForShows(seriesList) {
 	  let image = seriesList[i].image ? seriesList[i].image.medium.replace('http','https') : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
 	  let summary = seriesList[i].summary ? seriesList[i].summary : "<p>Summary not available</p>";
 	  // Add style="display: none;" for infinite scroll
-	  str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${seriesList[i].id}/episodes">
+	  str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${seriesList[i].id}/episodes" style="background-color: rgb(80, 80, 80);">
 			<div class="seriesTitle"><h1>${seriesList[i].name}</h1></div>
 			<div class="seriesDescription">
 				<img src=${image}>
@@ -133,7 +133,7 @@ function toggleLike() {
 function addColor() {
 	let img = document.querySelectorAll("img");
 	for (let i=0; i<img.length; i++) {
-		if (img[i].src.slice(0,14) === "https://static") {
+		if (img[i].src.slice(0,14) === "https://static" && img[i].parentElement.parentElement.style.backgroundColor === `rgb(80, 80, 80)`) {
 			let color = get_average_rgb(img[i]);
 			let c1 = color[0] + 80 <= 255 ? color[0] + 80 : 255;
 			let c2 = color[1] + 80 <= 255 ? color[1] + 80 : 255;
