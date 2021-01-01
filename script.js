@@ -422,7 +422,7 @@ function makePageForEpisodes(episodeList, color, seriesName) {
   str += "</div>";
   for (let i=0; i<episodeList.length; i++) {
 	let episodeCode = `S${String(episodeList[i].season).padStart(2, '0')}E${String(episodeList[i].number).padStart(2, '0')}`;
-	let image = episodeList[i].image ? episodeList[i].image.medium : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
+	let image = episodeList[i].image ? episodeList[i].image.medium.replace('http','https') : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
 	let summary = episodeList[i].summary ? episodeList[i].summary : "<p>Summary not available</p>";
 	let maxLength = 200;
 	str += `<section id=${episodeCode} class="episodeSection">
