@@ -71,10 +71,16 @@ function loadSeriesView(seriesList) {
 		oldCredits.remove();
 	}
 	makePageForShows(seriesList);
-	addColor();
 	addEpisodeClick("seriesClass");
 	createSeriesSearchBar(seriesList);
 	addSeriesSearchFunction(seriesList);
+	let ColorTimer = setInterval(function() {
+		addColor();
+		console.log("Changed color");
+		if (document.querySelector('.seriesClass').style.backgroundColor != "rgb(80, 80, 80)") {
+			clearInterval(ColorTimer);
+		}
+	}, 700);	
 	//infiniteScroll();
 }
 
