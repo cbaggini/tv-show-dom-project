@@ -129,7 +129,7 @@ function addCast(series, color) {
 	let article = document.querySelector(".cast");
 	article.style.backgroundColor = color;
 	const seriesId = series.slice(29,series.indexOf("/episodes"));
-	fetchData(`http://api.tvmaze.com/shows/${seriesId}/cast`).then(allCast => {
+	fetchData(`https://api.tvmaze.com/shows/${seriesId}/cast`).then(allCast => {
 		const maxLen = allCast.length > 9 ? 9 : allCast.length;
 		let str = "<h2>Cast</h2><div>";
 		for(let i=0; i<maxLen; i++) {
