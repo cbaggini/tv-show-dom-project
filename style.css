@@ -126,6 +126,12 @@ label {
 .read {
   text-align: center;
   text-decoration: underline;
+  cursor: pointer;
+}
+
+.fa-heart-o,
+.fa-heart {
+  color: red;
 }
 
 .seriesClass,

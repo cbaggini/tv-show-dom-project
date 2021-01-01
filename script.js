@@ -103,7 +103,7 @@ function makePageForShows(seriesList) {
 			<div class="seriesTitle"><h1>${seriesList[i].name}</h1></div>
 			<div class="seriesDescription">
 				<img src=${image}>
-				<article class="seriesArticle"><p>${summary}</p></article>
+				<article class="seriesArticle"><p>${summary}</p><i class="fa fa-heart-o" onclick="toggleLike()" style="font-size:24px;"></i></article>
 				<aside>
 					<p><strong>Rated:&nbsp;</strong>${seriesList[i].rating.average}</p>
 					<p><strong>Genres:&nbsp;</strong>${seriesList[i].genres.join(" | ")}</p>
@@ -115,6 +115,16 @@ function makePageForShows(seriesList) {
   }
   series.innerHTML = str;
   rootElem.append(series);
+}
+
+// Like/unlike show
+function toggleLike() {
+	event.stopPropagation();
+	if (event.target.className === "fa fa-heart-o") {
+		event.target.className = "fa fa-heart";
+	} else {
+		event.target.className = "fa fa-heart-o";
+	}
 }
 
 // Add background color to series div
