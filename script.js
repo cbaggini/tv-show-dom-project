@@ -167,7 +167,7 @@ function getCredit(castId, castName) {
 	const creditDiv = document.createElement("div");
 	creditDiv.id = "credits";
 	creditDiv.innerHTML = `<h1>${castName}</h1>`;
-	fetchData(`http://api.tvmaze.com/people/${castId}/castcredits?embed=show`).then(credits => {
+	fetchData(`https://api.tvmaze.com/people/${castId}/castcredits?embed=show`).then(credits => {
 		credits = removeDuplicatesBy(x => x._embedded.show.id, credits);
 		for (let i=0; i<credits.length; i++) {
 			let series = document.getElementById(`https://api.tvmaze.com/shows/${credits[i]._embedded.show.id}/episodes`);
