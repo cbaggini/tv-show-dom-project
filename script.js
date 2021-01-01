@@ -78,8 +78,9 @@ function loadSeriesView(seriesList) {
 	let ColorTimer = setInterval(function() {
 		addColor();
 		let whiteDivs = [...document.querySelectorAll('.seriesClass')].filter(el => el.style.backgroundColor === "rgb(80, 80, 80)");
-		console.log("changed colors")
+		console.log("changed colors");
 		if (whiteDivs.length <= 4) {
+			console.log("finished loading colors");
 			clearInterval(ColorTimer);
 		}
 	}, 700);	
