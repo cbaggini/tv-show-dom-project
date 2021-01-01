@@ -115,8 +115,25 @@ label {
   border-radius: 5px;
 }
 
-.episodeArticle {
+.episodeArticle,
+.episodeComment,
+.newComment {
   padding: 0.5rem;
+}
+
+.commentEpisode,
+.sendComment {
+  display: block;
+  width: 50%;
+  text-align: center;
+  margin: 0.3rem auto;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+textarea {
+  resize: none;
 }
 
 .episodeImage {
@@ -132,6 +149,11 @@ label {
 .fa-heart-o,
 .fa-heart {
   color: red;
+}
+
+.newComment {
+  flex-direction: column;
+  padding-top: 1rem;
 }
 
 .seriesClass,

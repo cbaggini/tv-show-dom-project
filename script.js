@@ -78,6 +78,7 @@ function loadSeriesView(seriesList) {
 	let ColorTimer = setInterval(function() {
 		addColor();
 		let whiteDivs = [...document.querySelectorAll('.seriesClass')].filter(el => el.style.backgroundColor === "rgb(80, 80, 80)");
+		console.log("changed colors")
 		if (whiteDivs.length <= 4) {
 			clearInterval(ColorTimer);
 		}
@@ -407,7 +408,7 @@ function readMore() {
 	let lnk = event.target;
 	lnk.style.display = "none";
 	let section = lnk.parentNode;
-	let readLess = section.lastElementChild;
+	let readLess = section.children[5];
 	readLess.style.display = "block";
 	let span = section.children[4];
 	section.children[2].innerText += span.innerText;
@@ -451,12 +452,16 @@ function makePageForEpisodes(episodeList, color, seriesName) {
 			<img class="episodeImage" src=${image}>`;
 	if (summary.length <= maxLength) {
 		str+= `<article class="episodeArticle">${summary}</article>
+			<button class="commentEpisode">Add comment</button>
+			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
 			</section>`;
 	} else {
 		str += `<article class="episodeArticle">${summary.slice(0,summary.indexOf(' ', maxLength))}</article>
 			<p class="read" onclick="readMore()">Read more</p>
 			<span style="display: none;">${summary.slice(summary.indexOf(' ', maxLength))}</span>
 			<p class="read" onclick="readLess()" style="display: none;">Read less</p>
+			<button class="commentEpisode">Add comment</button>
+			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
 			</section>`;
 	}
   }
@@ -466,6 +471,18 @@ function makePageForEpisodes(episodeList, color, seriesName) {
   for (let i=0; i<eps.length; i++) {
 	  eps[i].style.backgroundColor = color;
 	  eps[i].style.display = "none";
+	  eps[i].lastElementChild.previousElementSibling.addEventListener("click", function() {
+		  eps[i].lastElementChild.style.display = "flex";
+		  eps[i].lastElementChild.lastElementChild.addEventListener("click", function(e) {
+			  eps[i].lastElementChild.style.display = "none";
+			  let txt = e.target.previousElementSibling.value;
+			  let comment = document.createElement("p");
+			  comment.classList = "episodeComment";
+			  comment.innerText = txt;
+			  eps[i].insertBefore(comment, eps[i].lastElementChild.previousElementSibling);
+			  e.target.previousElementSibling.value = "";
+		  })
+	  });
   }
   document.querySelector("#searchBar").style.backgroundColor = color;
   let season1 = document.querySelectorAll(`[id^="S01"]`);
