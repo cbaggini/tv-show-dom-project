@@ -3,6 +3,7 @@ function setup() {
 	let seriesList = getAllShows();
 	seriesList = seriesList.sort((a,b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)); 
 	loadSeriesView(seriesList);
+	history.pushState(null, null, 'series');
 	document.getElementById("alphabetic").checked = true;
 	// let sentinel = document.querySelector(".sentinel");
 	// Callback function for infinite scroll observer
@@ -53,12 +54,10 @@ function get_average_rgb(img) {
     if (typeof img == 'string') {
         var src = img;
         img = new Image;
-		//img.setAttribute('crossOrigin', ''); 
-		img.crossOrigin = "anonymous";
+		img.setAttribute('crossOrigin', ''); 
 		img.src = src;
 	}
-	//img.setAttribute('crossOrigin', ''); 
-	img.crossOrigin = "anonymous";
+	img.setAttribute('crossOrigin', ''); 
     context.imageSmoothingEnabled = true;
 	context.drawImage(img, 0, 0, 1, 1);
     return context.getImageData(0, 0, 1, 1).data.slice(0,3);
@@ -187,6 +186,7 @@ function getCredit(castId, castName) {
 		}
 		rootElem.append(creditDiv);
 		addEpisodeClick("creditsClass");
+		history.pushState(null, null, 'credits');
 	})
 }
 
@@ -199,6 +199,7 @@ function addEpisodeClick(className) {
 			let color = seriesList[i].style.backgroundColor;
 			let seriesName = seriesList[i].children[0].innerText;
 			loadEpisodeView(series, color, seriesName);
+			history.pushState(null, null, 'episodes');
 		})	
 	}
 }
@@ -222,6 +223,7 @@ function loadEpisodeView(series, color, seriesName) {
 		loadFilter(allEpisodes);
 		filterEpisode();
 		addCast(series, color);
+		history.pushState(null, null, 'episodes');
 	})
 }
 
@@ -341,6 +343,7 @@ function backToSeries() {
 		seriesView.style.display = "flex";
 		const seriesSearch = document.getElementById("seriesSearchBar");
 		seriesSearch.style.display = "flex";
+		history.pushState(null, null, 'series');
 	})	
 }
 
