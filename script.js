@@ -89,7 +89,7 @@ function makePageForShows(seriesList) {
   series.id = "series";
   let str = '';
   for (let i=0; i<seriesList.length; i++) {
-	  let image = seriesList[i].image ? seriesList[i].image.medium : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
+	  let image = seriesList[i].image ? seriesList[i].image.medium.replace('http','https') : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
 	  let summary = seriesList[i].summary ? seriesList[i].summary : "<p>Summary not available</p>";
 	  // Add style="display: none;" for infinite scroll
 	  str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${seriesList[i].id}/episodes">
@@ -114,7 +114,7 @@ function makePageForShows(seriesList) {
 function addColor() {
 	let img = document.querySelectorAll("img");
 	for (let i=0; i<img.length; i++) {
-		if (img[i].src.slice(0,13) === "http://static") {
+		if (img[i].src.slice(0,14) === "https://static") {
 			let color = get_average_rgb(img[i]);
 			let c1 = color[0] + 80 <= 255 ? color[0] + 80 : 255;
 			let c2 = color[1] + 80 <= 255 ? color[1] + 80 : 255;
