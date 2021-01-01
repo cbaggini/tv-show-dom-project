@@ -76,8 +76,8 @@ function loadSeriesView(seriesList) {
 	addSeriesSearchFunction(seriesList);
 	let ColorTimer = setInterval(function() {
 		addColor();
-		console.log("Changed color");
-		if (document.querySelector('.seriesClass').style.backgroundColor != "rgb(80, 80, 80)") {
+		let whiteDivs = [...document.querySelectorAll('.seriesClass')].filter(el => el.style.backgroundColor === "rgb(80, 80, 80)");
+		if (whiteDivs.length <= 4) {
 			clearInterval(ColorTimer);
 		}
 	}, 700);	
