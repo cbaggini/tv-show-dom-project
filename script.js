@@ -148,15 +148,28 @@ function addCast(series, color) {
 	let article = document.querySelector(".cast");
 	article.style.backgroundColor = color;
 	const seriesId = series.slice(29,series.indexOf("/episodes"));
-	fetchData(`https://api.tvmaze.com/shows/${seriesId}/cast`).then(allCast => {
-		const maxLen = allCast.length > 9 ? 9 : allCast.length;
-		let str = "<h2>Cast</h2><div>";
-		for(let i=0; i<maxLen; i++) {
-			str += `<p class="actors"><a onclick = "getCredit('${allCast[i].person.id}','${allCast[i].person.name}')">${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`
-		}
-		str += "</div>";
-		article.innerHTML = str;
-	});
+	if (sessionStorage.getItem(`cast${seriesId}`) === null) {
+		fetchData(`https://api.tvmaze.com/shows/${seriesId}/cast`).then(allCast => {
+			sessionStorage.setItem(`cast${seriesId}`, JSON.stringify(allCast));
+			const maxLen = allCast.length > 9 ? 9 : allCast.length;
+			let str = "<h2>Cast</h2><div>";
+			for(let i=0; i<maxLen; i++) {
+				str += `<p class="actors"><a onclick = "getCredit('${allCast[i].person.id}','${allCast[i].person.name}')">${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`
+			}
+			str += "</div>";
+			article.innerHTML = str;
+		});
+	} else {
+		let storedCast = JSON.parse(sessionStorage.getItem(`cast${seriesId}`));
+		const maxLen = storedCast.length > 9 ? 9 : storedCast.length;
+			let str = "<h2>Cast</h2><div>";
+			for(let i=0; i<maxLen; i++) {
+				str += `<p class="actors"><a onclick = "getCredit('${storedCast[i].person.id}','${storedCast[i].person.name}')">${storedCast[i].person.name}</a> as ${storedCast[i].character.name}</p>`
+			}
+			str += "</div>";
+			article.innerHTML = str;
+	}
+	
 }
 
 // Remove duplicates from array of objects based on a property
@@ -186,10 +199,26 @@ function getCredit(castId, castName) {
 	const creditDiv = document.createElement("div");
 	creditDiv.id = "credits";
 	creditDiv.innerHTML = `<h1>${castName}</h1>`;
-	fetchData(`https://api.tvmaze.com/people/${castId}/castcredits?embed=show`).then(credits => {
-		credits = removeDuplicatesBy(x => x._embedded.show.id, credits);
-		for (let i=0; i<credits.length; i++) {
-			let series = document.getElementById(`https://api.tvmaze.com/shows/${credits[i]._embedded.show.id}/episodes`);
+	if (sessionStorage.getItem(`credit${castId}`) === null) {
+		fetchData(`https://api.tvmaze.com/people/${castId}/castcredits?embed=show`).then(credits => {
+			credits = removeDuplicatesBy(x => x._embedded.show.id, credits);
+			sessionStorage.setItem(`credit${castId}`, JSON.stringify(credits));
+			for (let i=0; i<credits.length; i++) {
+				let series = document.getElementById(`https://api.tvmaze.com/shows/${credits[i]._embedded.show.id}/episodes`);
+				if (series) {
+					let cln = series.cloneNode(true);
+					cln.classList = "creditsClass"
+					creditDiv.append(cln);
+				}
+			}
+			rootElem.append(creditDiv);
+			addEpisodeClick("creditsClass");
+			history.pushState(null, null, 'credits');
+		})
+	} else {
+		let storedCredits = JSON.parse(sessionStorage.getItem(`credit${castId}`));
+		for (let i=0; i<storedCredits.length; i++) {
+			let series = document.getElementById(`https://api.tvmaze.com/shows/${storedCredits[i]._embedded.show.id}/episodes`);
 			if (series) {
 				let cln = series.cloneNode(true);
 				cln.classList = "creditsClass"
@@ -199,7 +228,7 @@ function getCredit(castId, castName) {
 		rootElem.append(creditDiv);
 		addEpisodeClick("creditsClass");
 		history.pushState(null, null, 'credits');
-	})
+	}
 }
 
 // When user clicks on series, they will go to episode view
@@ -229,14 +258,25 @@ function loadEpisodeView(series, color, seriesName) {
 	const seriesSearch = document.getElementById("seriesSearchBar");
 	seriesSearch.style.display = "none";
 	createSearchBar();
-	fetchData(series).then(allEpisodes => {	
-		makePageForEpisodes(allEpisodes, color, seriesName);
+	if (sessionStorage.getItem(series) === null) {
+		fetchData(series).then(allEpisodes => {	
+			sessionStorage.setItem(series, JSON.stringify(allEpisodes));
+			makePageForEpisodes(allEpisodes, color, seriesName, series);
+			addSearchFunction();
+			loadFilter(allEpisodes);
+			filterEpisode();
+			addCast(series, color);
+			history.pushState(null, null, 'episodes');
+		})
+	} else {
+		let storedEpisodes = JSON.parse(sessionStorage.getItem(series));
+		makePageForEpisodes(storedEpisodes, color, seriesName, series);
 		addSearchFunction();
-		loadFilter(allEpisodes);
+		loadFilter(storedEpisodes);
 		filterEpisode();
 		addCast(series, color);
 		history.pushState(null, null, 'episodes');
-	})
+	}
 }
 
 // Create search bar for episodes
@@ -412,7 +452,7 @@ function readMore() {
 	let readLess = section.children[5];
 	readLess.style.display = "block";
 	let span = section.children[4];
-	section.children[2].innerText += span.innerText;
+	section.children[2].innerHTML = `<p>${section.children[2].innerText + span.innerText}</p>`;
 }
 
 // Read less function
@@ -424,11 +464,11 @@ function readLess() {
 	readMore.style.display = "block";
 	let article = section.children[2];
 	let maxLength = 200;
-	article.innerText = article.innerText.slice(0,article.innerText.indexOf(' ', maxLength));
+	article.innerHTML = `<p>${article.innerText.slice(0,article.innerText.indexOf(' ', maxLength))}</p>`;
 }
 
 // Load episodes
-function makePageForEpisodes(episodeList, color, seriesName) {
+function makePageForEpisodes(episodeList, color, seriesName, series) {
   const rootElem = document.getElementById("root");
   let existingEpisodes = document.querySelector(".episodes");
   if (existingEpisodes) {
@@ -448,23 +488,28 @@ function makePageForEpisodes(episodeList, color, seriesName) {
 	let image = episodeList[i].image ? episodeList[i].image.medium.replace('http','https') : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
 	let summary = episodeList[i].summary ? episodeList[i].summary : "<p>Summary not available</p>";
 	let maxLength = 200;
+	let seriesId = series.slice(29,series.indexOf("/episodes"));
 	str += `<section id=${episodeCode} class="episodeSection">
 			<div class="title"><h4>${episodeCode} - ${episodeList[i].name}</h4></div>
 			<img class="episodeImage" src=${image}>`;
 	if (summary.length <= maxLength) {
-		str+= `<article class="episodeArticle">${summary}</article>
-			<button class="commentEpisode">Add comment</button>
-			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
-			</section>`;
+		str+= `<article class="episodeArticle">${summary}</article>`;
 	} else {
 		str += `<article class="episodeArticle">${summary.slice(0,summary.indexOf(' ', maxLength))}</article>
 			<p class="read" onclick="readMore()">Read more</p>
 			<span style="display: none;">${summary.slice(summary.indexOf(' ', maxLength))}</span>
-			<p class="read" onclick="readLess()" style="display: none;">Read less</p>
-			<button class="commentEpisode">Add comment</button>
-			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
-			</section>`;
+			<p class="read" onclick="readLess()" style="display: none;">Read less</p>`;
 	}
+	if (sessionStorage.getItem(`${seriesId}${episodeCode}`) !== null) {
+		let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
+		str += '<p class="episodeComment"><strong>Comments:</strong></p>';
+		for (let i=0; i<obj.length; i++) {
+			str += `<p class="episodeComment">${obj[i]}</p>`;
+		}
+	}
+	str += `<button class="commentEpisode">Add comment</button>
+			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
+			</section>`
   }
   episodes.innerHTML = str;
   rootElem.append(episodes);
@@ -475,13 +520,28 @@ function makePageForEpisodes(episodeList, color, seriesName) {
 	  eps[i].lastElementChild.previousElementSibling.addEventListener("click", function() {
 		  eps[i].lastElementChild.style.display = "flex";
 		  eps[i].lastElementChild.lastElementChild.addEventListener("click", function(e) {
-			  eps[i].lastElementChild.style.display = "none";
-			  let txt = e.target.previousElementSibling.value;
-			  let comment = document.createElement("p");
-			  comment.classList = "episodeComment";
-			  comment.innerText = txt;
-			  eps[i].insertBefore(comment, eps[i].lastElementChild.previousElementSibling);
-			  e.target.previousElementSibling.value = "";
+			eps[i].lastElementChild.style.display = "none";
+			let seriesId = series.slice(29,series.indexOf("/episodes"));
+			let txt = e.target.previousElementSibling.value;
+			let comment = document.createElement("p");
+			comment.classList = "episodeComment";
+			comment.innerText = txt;
+			let episodeCode = eps[i].id;
+			if (sessionStorage.getItem(`${seriesId}${episodeCode}`) === null) {
+				let commentArray = [txt];
+				sessionStorage.setItem(`${seriesId}${episodeCode}`, JSON.stringify(commentArray));
+				let commentTitle = document.createElement("p");
+				commentTitle.classList = "episodeComment";
+				commentTitle.innerHTML = '<strong>Comments:</strong>';
+				eps[i].insertBefore(commentTitle, eps[i].lastElementChild.previousElementSibling);
+			} else {
+				let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
+				obj.push(txt);
+				sessionStorage.setItem(`${seriesId}${episodeCode}`, JSON.stringify(obj));
+			}
+			eps[i].insertBefore(comment, eps[i].lastElementChild.previousElementSibling);
+			e.target.previousElementSibling.value = "";
+			
 		  })
 	  });
   }

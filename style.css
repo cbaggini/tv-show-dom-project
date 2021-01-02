@@ -119,9 +119,13 @@ label {
 }
 
 .episodeArticle,
-.episodeComment,
 .newComment {
   padding: 0.5rem;
+}
+
+.episodeComment {
+  padding: 0;
+  margin: 0.5rem;
 }
 
 .commentEpisode,
