@@ -104,7 +104,7 @@ function makePageForShows(seriesList) {
 	  str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${seriesList[i].id}/episodes" style="background-color: rgb(80, 80, 80);">
 			<div class="seriesTitle"><h1>${seriesList[i].name}</h1></div>
 			<div class="seriesDescription">
-				<img src=${image}>
+				<img class="seriesImage" src=${image}>
 				<article class="seriesArticle"><p>${summary}</p><i class="fa fa-heart-o" onclick="toggleLike()" style="font-size:24px;"></i></article>
 				<aside>
 					<p><strong>Rated:&nbsp;</strong>${seriesList[i].rating.average}</p>
@@ -131,7 +131,7 @@ function toggleLike() {
 
 // Add background color to series div
 function addColor() {
-	let img = document.querySelectorAll("img");
+	let img = document.querySelectorAll(".seriesImage");
 	for (let i=0; i<img.length; i++) {
 		if (img[i].src.slice(0,14) === "https://static" && img[i].parentElement.parentElement.style.backgroundColor === `rgb(80, 80, 80)`) {
 			let color = get_average_rgb(img[i]);
