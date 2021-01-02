@@ -34,13 +34,19 @@ h1 {
   text-align: center;
 }
 
+input {
+  padding: 5px;
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box; /* Firefox, other Gecko */
+  box-sizing: border-box; /* Opera/IE 8+ */
+}
+
 #seriesSearchInput,
 #selectedSeries,
 #searchInput,
 #episodeFilter,
 #seriesFilter {
   margin-left: 2rem;
-  padding: 3px;
 }
 
 #alphabetic,
@@ -244,7 +250,6 @@ footer {
   #episodeFilter,
   #seriesFilter {
     margin-left: 0;
-    padding-left: 3px;
   }
   #seriesFilter {
     margin-bottom: 0.8rem;
