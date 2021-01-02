@@ -309,10 +309,12 @@ function createSeriesSearchBar(seriesList) {
 			<input id="seriesSearchInput" type=text placeholder="Your search term here"></input>
 			<p id="selectedSeries">found ${seriesList.length} shows</p>
 			<select name="series" id="seriesFilter"></select>
+			<label for="alphabetic">
 			<input type="radio" id="alphabetic" name="sort" value="alphabetic">
-			<label for="alphabetic">Sort by name</label><br>
+			Sort by name</label><br>
+			<label for="rating">
 			<input type="radio" id="rating" name="sort" value="rating">
-			<label for="rating">Sort by rating</label> `			
+			Sort by rating</label> `			
 	rootElem.insertBefore(searchBar, rootElem.firstChild);
 	loadSeriesFilter(seriesList);
 	filterSeries();

@@ -40,7 +40,7 @@ h1 {
 #episodeFilter,
 #seriesFilter {
   margin-left: 2rem;
-  padding-left: 3px;
+  padding: 3px;
 }
 
 #alphabetic,
@@ -210,4 +210,39 @@ footer {
   justify-content: center;
   margin: 0;
   padding: 2rem;
+}
+
+@media (max-width: 700px) {
+  .seriesDescription {
+    flex-direction: column;
+    align-items: center;
+  }
+  #searchBar,
+  #seriesSearchBar {
+    flex-direction: column;
+  }
+  .seriesImage {
+    width: 210px;
+  }
+  #backBtn,
+  #episodeFilter,
+  #searchInput,
+  #selected {
+    margin: 1rem;
+  }
+  #backBtn {
+    max-width: 150px;
+    align-self: center;
+  }
+  #seriesSearchInput,
+  #selectedSeries,
+  #searchInput,
+  #episodeFilter,
+  #seriesFilter {
+    margin-left: 0;
+    padding-left: 3px;
+  }
+  #seriesFilter {
+    margin-bottom: 0.8rem;
+  }
 }
