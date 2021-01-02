@@ -52,6 +52,7 @@ h1 {
 }
 label {
   margin: auto 1rem;
+  white-space: nowrap;
 }
 
 .episodes {
