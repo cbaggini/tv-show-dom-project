@@ -484,11 +484,14 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
   }
   document.querySelector("#searchBar").style.backgroundColor = color;
   let season1 = document.querySelectorAll(`[id^="S01"]`);
+  document.querySelector(".paginationBtn").style.border = "1px solid black";
   for (let i=0; i<season1.length; i++) {
 	season1[i].style.display = "block";
   }
   for (let i=0; i<uniqueSeries.length; i++) {
-	document.getElementById(`${uniqueSeries[i]}`).addEventListener("click", function() {
+	document.getElementById(`${uniqueSeries[i]}`).addEventListener("click", function(e) {
+	document.querySelectorAll(".paginationBtn").forEach(el => el.style.border = "none");
+	e.target.style.border = "1px solid black";
 	let eps = document.querySelectorAll(".episodeSection");
 	for (let i=0; i<eps.length; i++) {
 		eps[i].style.display = "none";
