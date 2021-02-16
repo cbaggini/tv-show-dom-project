@@ -159,6 +159,7 @@ textarea {
 .fa-heart-o,
 .fa-heart {
   color: red;
+  cursor: pointer;
 }
 
 .newComment {

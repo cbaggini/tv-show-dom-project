@@ -8,29 +8,6 @@ function setup() {
 }
 
 
-
-// Implement infinite scroll of shows
-function infiniteScroll() {
-	let sentinel = document.querySelector(".sentinel");
-	if (sentinel) {
-		sentinel.classList = "seriesClass";
-	}
-	let shows = document.querySelectorAll(".seriesClass");
-	let counter = 0;
-	let s = 0;
-	while (counter<10 && s<shows.length) {
-		if (shows[s].style.display === "none") {
-			shows[s].style.display = "flex";
-			counter++;
-		}
-		if (counter===10) {
-			shows[s].classList += " sentinel";
-		}
-		s++;
-	}
-}
-
-
 // Load series view
 function loadSeriesView(seriesList) {
 	const rootElem = document.getElementById("root");
