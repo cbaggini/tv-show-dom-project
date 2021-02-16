@@ -450,6 +450,7 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
   }
   episodes.innerHTML = str;
   rootElem.append(episodes);
+  // Add comments
   let eps = document.querySelectorAll(".episodeSection");
   for (let i=0; i<eps.length; i++) {
 	  eps[i].style.backgroundColor = color;
@@ -482,6 +483,7 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
 		  })
 	  });
   }
+  // Show only selected season
   document.querySelector("#searchBar").style.backgroundColor = color;
   let season1 = document.querySelectorAll(`[id^="S01"]`);
   document.querySelector(".paginationBtn").style.border = "1px solid black";
