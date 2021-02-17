@@ -461,7 +461,8 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
 			eps[i].lastElementChild.style.display = "none";
 			let seriesId = series.slice(29,series.indexOf("/episodes"));
 			let txt = e.target.previousElementSibling.value;
-			let comment = document.createElement("p");
+			if (txt.length > 0) {
+				let comment = document.createElement("p");
 			comment.classList = "episodeComment";
 			comment.innerText = txt;
 			let episodeCode = eps[i].id;
@@ -479,7 +480,7 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
 			}
 			eps[i].insertBefore(comment, eps[i].lastElementChild.previousElementSibling);
 			e.target.previousElementSibling.value = "";
-			
+			}			
 		  })
 	  });
   }
