@@ -450,41 +450,49 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
   }
   episodes.innerHTML = str;
   rootElem.append(episodes);
-  // Add comments
-  let eps = document.querySelectorAll(".episodeSection");
-  for (let i=0; i<eps.length; i++) {
-	  eps[i].style.backgroundColor = color;
-	  eps[i].style.display = "none";
-	  eps[i].lastElementChild.previousElementSibling.addEventListener("click", function() {
-		  eps[i].lastElementChild.style.display = "flex";
-		  eps[i].lastElementChild.lastElementChild.addEventListener("click", function(e) {
-			eps[i].lastElementChild.style.display = "none";
-			let seriesId = series.slice(29,series.indexOf("/episodes"));
-			let txt = e.target.previousElementSibling.value;
-			if (txt.length > 0) {
-				let comment = document.createElement("p");
-			comment.classList = "episodeComment";
-			comment.innerText = txt;
-			let episodeCode = eps[i].id;
-			if (sessionStorage.getItem(`${seriesId}${episodeCode}`) === null) {
-				let commentArray = [txt];
-				sessionStorage.setItem(`${seriesId}${episodeCode}`, JSON.stringify(commentArray));
-				let commentTitle = document.createElement("p");
-				commentTitle.classList = "episodeComment";
-				commentTitle.innerHTML = '<strong>Comments:</strong>';
-				eps[i].insertBefore(commentTitle, eps[i].lastElementChild.previousElementSibling);
-			} else {
-				let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
-				obj.push(txt);
-				sessionStorage.setItem(`${seriesId}${episodeCode}`, JSON.stringify(obj));
-			}
-			eps[i].insertBefore(comment, eps[i].lastElementChild.previousElementSibling);
-			e.target.previousElementSibling.value = "";
-			}			
-		  })
-	  });
-  }
-  // Show only selected season
+  addComments(series, color);
+  showSelectedSeason(uniqueSeries, color);
+}
+
+ // Add comments
+ function addComments(series, color) {
+	let eps = document.querySelectorAll(".episodeSection");
+	for (let i=0; i<eps.length; i++) {
+		eps[i].style.backgroundColor = color;
+		eps[i].style.display = "none";
+		eps[i].lastElementChild.previousElementSibling.addEventListener("click", function() {
+			eps[i].lastElementChild.style.display = "flex";
+			eps[i].lastElementChild.lastElementChild.addEventListener("click", function(e) {
+				eps[i].lastElementChild.style.display = "none";
+				let seriesId = series.slice(29,series.indexOf("/episodes"));
+				let txt = e.target.previousElementSibling.value;
+				if (txt.length > 0) {
+					let comment = document.createElement("p");
+				comment.classList = "episodeComment";
+				comment.innerText = txt;
+				let episodeCode = eps[i].id;
+				if (sessionStorage.getItem(`${seriesId}${episodeCode}`) === null) {
+					let commentArray = [txt];
+					sessionStorage.setItem(`${seriesId}${episodeCode}`, JSON.stringify(commentArray));
+					let commentTitle = document.createElement("p");
+					commentTitle.classList = "episodeComment";
+					commentTitle.innerHTML = '<strong>Comments:</strong>';
+					eps[i].insertBefore(commentTitle, eps[i].lastElementChild.previousElementSibling);
+				} else {
+					let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
+					obj.push(txt);
+					sessionStorage.setItem(`${seriesId}${episodeCode}`, JSON.stringify(obj));
+				}
+				eps[i].insertBefore(comment, eps[i].lastElementChild.previousElementSibling);
+				e.target.previousElementSibling.value = "";
+				}			
+			})
+		});
+	}
+}
+
+// Show only selected season
+function showSelectedSeason(uniqueSeries, color) {
   document.querySelector("#searchBar").style.backgroundColor = color;
   let season1 = document.querySelectorAll(`[id^="S01"]`);
   document.querySelector(".paginationBtn").style.border = "1px solid black";
