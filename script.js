@@ -28,7 +28,7 @@ function makePageForShows(seriesList) {
   const rootElem = document.getElementById("root");
   const oldSeries = document.getElementById("series");
   if (oldSeries) {
-	  oldSeries.remove();
+	oldSeries.remove();
   }
   const series = document.createElement("div");
   series.id = "series";
@@ -154,6 +154,7 @@ function getCredit(castId, castName) {
 		let storedCredits = JSON.parse(sessionStorage.getItem(`credit${castId}`));
 		for (let i=0; i<storedCredits.length; i++) {
 			let series = document.getElementById(`https://api.tvmaze.com/shows/${storedCredits[i]._embedded.show.id}/episodes`);
+			// Only keep series that are in provided series JSON file
 			if (series) {
 				let cln = series.cloneNode(true);
 				cln.classList = "creditsClass"
