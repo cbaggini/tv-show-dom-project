@@ -81,21 +81,20 @@ function addSearchFunction() {
     .addEventListener("input", function (event) {
       let search = event.target.value;
       let episodes = document.querySelectorAll(".episodeSection");
+      let selected = document.querySelector("#selected");
       if (search === "") {
         for (let i = 0; i < episodes.length; i++) {
-          episodes[i].style.display = "none";
+          if (episodes[i].id.includes("S01")) {
+            episodes[i].style.display = "block";
+          } else {
+            episodes[i].style.display = "none";
+          }
         }
-        let season1 = document.querySelectorAll(`[id^="S01"]`);
-        for (let i = 0; i < season1.length; i++) {
-          season1[i].style.display = "block";
-        }
-        let selected = document.querySelector("#selected");
         selected.innerHTML = "";
       } else {
         let newEpisodes = [...episodes].filter(function (el) {
           return el.innerText.toLowerCase().includes(search.toLowerCase());
         });
-        let selected = document.querySelector("#selected");
         selected.innerHTML = `Displaying ${newEpisodes.length}/${episodes.length} episodes`;
         for (let i = 0; i < episodes.length; i++) {
           if (newEpisodes.includes(episodes[i])) {
@@ -154,50 +153,57 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
     str += `<button type="button" class="paginationBtn" style="background-color: ${color}; border: 1px solid ${color}"id="${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
   }
   str += "</div>";
+  const maxLength = 200;
+  const seriesId = series.slice(29, series.indexOf("/episodes"));
   for (let i = 0; i < episodeList.length; i++) {
-    let episodeCode = `S${String(episodeList[i].season).padStart(
-      2,
-      "0"
-    )}E${String(episodeList[i].number).padStart(2, "0")}`;
-    let image = episodeList[i].image
-      ? episodeList[i].image.medium
-      : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
-    let summary = episodeList[i].summary
-      ? episodeList[i].summary
-      : "<p>Summary not available</p>";
-    let maxLength = 200;
-    let seriesId = series.slice(29, series.indexOf("/episodes"));
-    str += `<section id=${episodeCode} class="episodeSection">
-			<div class="title"><h4>${episodeCode} - ${episodeList[i].name}</h4></div>
-			<img class="episodeImage" src=${image}>`;
-    if (summary.length <= maxLength) {
-      str += `<article class="episodeArticle">${summary}</article>`;
-    } else {
-      str += `<article class="episodeArticle">${summary.slice(
-        0,
-        summary.indexOf(" ", maxLength)
-      )}</article>
-			<p class="read" onclick="readMore()">Read more</p>
-			<span style="display: none;">${summary.slice(
-        summary.indexOf(" ", maxLength)
-      )}</span>
-			<p class="read" onclick="readLess()" style="display: none;">Read less</p>`;
-    }
-    if (sessionStorage.getItem(`${seriesId}${episodeCode}`) !== null) {
-      let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
-      str += '<p class="episodeComment"><strong>Comments:</strong></p>';
-      for (let i = 0; i < obj.length; i++) {
-        str += `<p class="episodeComment">${obj[i]}</p>`;
-      }
-    }
-    str += `<button class="commentEpisode">Add comment</button>
-			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
-			</section>`;
+    str += createEpisode(episodeList[i], maxLength, seriesId);
   }
   episodes.innerHTML = str;
   rootElem.append(episodes);
   addComments(series, color);
   showSelectedSeason(uniqueSeries, color);
+}
+
+// Create HTML for a single episode
+function createEpisode(episode, maxLength, seriesId) {
+  let str = "";
+  let episodeCode = `S${String(episode.season).padStart(2, "0")}E${String(
+    episode.number
+  ).padStart(2, "0")}`;
+  let image = episode.image
+    ? episode.image.medium
+    : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
+  let summary = episode.summary
+    ? episode.summary
+    : "<p>Summary not available</p>";
+
+  str += `<section id=${episodeCode} class="episodeSection">
+			<div class="title"><h4>${episodeCode} - ${episode.name}</h4></div>
+			<img class="episodeImage" src=${image}>`;
+  if (summary.length <= maxLength) {
+    str += `<article class="episodeArticle">${summary}</article>`;
+  } else {
+    str += `<article class="episodeArticle">${summary.slice(
+      0,
+      summary.indexOf(" ", maxLength)
+    )}</article>
+			<p class="read" onclick="readMore()">Read more</p>
+			<span style="display: none;">${summary.slice(
+        summary.indexOf(" ", maxLength)
+      )}</span>
+			<p class="read" onclick="readLess()" style="display: none;">Read less</p>`;
+  }
+  if (sessionStorage.getItem(`${seriesId}${episodeCode}`) !== null) {
+    let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
+    str += '<p class="episodeComment"><strong>Comments:</strong></p>';
+    for (let i = 0; i < obj.length; i++) {
+      str += `<p class="episodeComment">${obj[i]}</p>`;
+    }
+  }
+  str += `<button class="commentEpisode">Add comment</button>
+			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
+			</section>`;
+  return str;
 }
 
 // Add comments
