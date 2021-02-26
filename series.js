@@ -1,3 +1,7 @@
+// Global variables referring to event listeners functions (sort by name and sort by rating)
+var nameHandler;
+var ratingHandler;
+
 // Load series view
 function loadSeriesView(seriesList) {
   const rootElem = document.getElementById("root");
@@ -24,31 +28,35 @@ function makePageForShows(seriesList) {
   series.id = "series";
   let str = "";
   for (let i = 0; i < seriesList.length; i++) {
-    let image = seriesList[i].image
-      ? seriesList[i].image.medium.replace("http", "https")
-      : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
-    let summary = seriesList[i].summary
-      ? seriesList[i].summary
-      : "<p>Summary not available</p>";
-    // Add style="display: none;" for infinite scroll
-    str += `<section class="seriesClass" id="https://api.tvmaze.com/shows/${
-      seriesList[i].id
-    }/episodes" style="background-color: rgb(80, 80, 80);">
-			<div class="seriesTitle"><h1>${seriesList[i].name}</h1></div>
+    str += makeSeries(seriesList[i]);
+  }
+  series.innerHTML = str;
+  rootElem.append(series);
+}
+
+// Create div for one series
+function makeSeries(series) {
+  let image = series.image
+    ? series.image.medium.replace("http", "https")
+    : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
+  let summary = series.summary
+    ? series.summary
+    : "<p>Summary not available</p>";
+  return `<section class="seriesClass" id="https://api.tvmaze.com/shows/${
+    series.id
+  }/episodes" style="background-color: rgb(80, 80, 80);">
+			<div class="seriesTitle"><h1>${series.name}</h1></div>
 			<div class="seriesDescription">
 				<img class="seriesImage" src=${image}>
 				<article class="seriesArticle"><p>${summary}</p><i class="fa fa-heart-o" onclick="toggleLike()" style="font-size:24px;"></i></article>
 				<aside>
-					<p><strong>Rated:&nbsp;</strong>${seriesList[i].rating.average}</p>
-					<p><strong>Genres:&nbsp;</strong>${seriesList[i].genres.join(" | ")}</p>
-					<p><strong>Status:&nbsp;</strong>${seriesList[i].status}</p>
-					<p><strong>Runtime:&nbsp;</strong>${seriesList[i].runtime}</p>
+					<p><strong>Rated:&nbsp;</strong>${series.rating.average}</p>
+					<p><strong>Genres:&nbsp;</strong>${series.genres.join(" | ")}</p>
+					<p><strong>Status:&nbsp;</strong>${series.status}</p>
+					<p><strong>Runtime:&nbsp;</strong>${series.runtime}</p>
 				</aside>
 			</div>
 			</section>`;
-  }
-  series.innerHTML = str;
-  rootElem.append(series);
 }
 
 // Like/unlike show
@@ -63,20 +71,12 @@ function toggleLike() {
 
 // Add background color to series div
 function addColor() {
-  let img = document.querySelectorAll(".seriesImage");
-  for (let i = 0; i < img.length; i++) {
-    if (
-      img[i].src.slice(0, 14) === "https://static" &&
-      img[i].parentElement.parentElement.style.backgroundColor ===
-        `rgb(80, 80, 80)`
-    ) {
-      let c1 = (Math.random() * 255 + 255) / 2;
-      let c2 = (Math.random() * 255 + 255) / 2;
-      let c3 = (Math.random() * 255 + 255) / 2;
-      img[
-        i
-      ].parentElement.parentElement.style.backgroundColor = `rgb(${c1},${c2},${c3})`;
-    }
+  let series = document.querySelectorAll(".seriesClass");
+  for (let i = 0; i < series.length; i++) {
+    let c1 = (Math.random() * 255 + 255) / 2;
+    let c2 = (Math.random() * 255 + 255) / 2;
+    let c3 = (Math.random() * 255 + 255) / 2;
+    series[i].style.backgroundColor = `rgb(${c1},${c2},${c3})`;
   }
 }
 
@@ -108,40 +108,56 @@ function createSeriesSearchBar(seriesList) {
 
 // Add event listener to sort series by name
 function alphabeticSort(seriesList) {
-  document.getElementById("alphabetic").addEventListener("change", function () {
-    document.getElementById("alphabetic").checked = true;
-    document.getElementById("rating").checked = false;
-    seriesList = seriesList.sort((a, b) =>
-      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-    );
-    for (let i = 0; i < seriesList.length; i++) {
-      document.getElementById(
-        `https://api.tvmaze.com/shows/${seriesList[i].id}/episodes`
-      ).style.order = `${i + 1}`;
-    }
-    loadSeriesFilter(seriesList);
-  });
+  let targetEl = document.getElementById("alphabetic");
+  if (nameHandler) {
+    targetEl.removeEventListener("change", nameHandler);
+  }
+  nameHandler = sortByName.bind(null, seriesList);
+  targetEl.addEventListener("change", nameHandler);
+}
+
+// function to sort series by name
+function sortByName(seriesList) {
+  document.getElementById("alphabetic").checked = true;
+  document.getElementById("rating").checked = false;
+  seriesList = seriesList.sort((a, b) =>
+    a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+  );
+  for (let i = 0; i < seriesList.length; i++) {
+    document.getElementById(
+      `https://api.tvmaze.com/shows/${seriesList[i].id}/episodes`
+    ).style.order = `${i + 1}`;
+  }
+  loadSeriesFilter(seriesList);
 }
 
 // Add event listener to sort series by rating
 function ratingSort(seriesList) {
-  document.getElementById("rating").addEventListener("change", function () {
-    document.getElementById("alphabetic").checked = false;
-    document.getElementById("rating").checked = true;
-    seriesList = seriesList.sort((a, b) =>
-      a.rating.average < b.rating.average
-        ? 1
-        : b.rating.average < a.rating.average
-        ? -1
-        : 0
-    );
-    for (let i = 0; i < seriesList.length; i++) {
-      document.getElementById(
-        `https://api.tvmaze.com/shows/${seriesList[i].id}/episodes`
-      ).style.order = `${i + 1}`;
-    }
-    loadSeriesFilter(seriesList);
-  });
+  let targetEl = document.getElementById("rating");
+  if (ratingHandler) {
+    targetEl.removeEventListener("change", ratingHandler);
+  }
+  ratingHandler = sortByRating.bind(null, seriesList);
+  targetEl.addEventListener("change", ratingHandler);
+}
+
+// Function to sort series by rating
+function sortByRating(seriesList) {
+  document.getElementById("alphabetic").checked = false;
+  document.getElementById("rating").checked = true;
+  seriesList = seriesList.sort((a, b) =>
+    a.rating.average < b.rating.average
+      ? 1
+      : b.rating.average < a.rating.average
+      ? -1
+      : 0
+  );
+  for (let i = 0; i < seriesList.length; i++) {
+    document.getElementById(
+      `https://api.tvmaze.com/shows/${seriesList[i].id}/episodes`
+    ).style.order = `${i + 1}`;
+  }
+  loadSeriesFilter(seriesList);
 }
 
 // Search series
@@ -151,12 +167,12 @@ function addSeriesSearchFunction(seriesList) {
     .addEventListener("input", function (event) {
       let search = event.target.value;
       let series = document.querySelectorAll(".seriesClass");
+      let selected = document.querySelector("#selectedSeries");
       if (search === "") {
         for (let i = 0; i < series.length; i++) {
           series[i].style.display = "flex";
         }
         loadSeriesFilter(seriesList);
-        let selected = document.querySelector("#selectedSeries");
         selected.innerHTML = `found ${seriesList.length} shows`;
         alphabeticSort(seriesList);
         ratingSort(seriesList);
@@ -174,7 +190,6 @@ function addSeriesSearchFunction(seriesList) {
               : false)
           );
         });
-        let selected = document.querySelector("#selectedSeries");
         selected.innerHTML = `found ${newSeriesList.length} shows`;
         if (document.getElementById("rating").checked === true) {
           newSeriesList = newSeriesList.sort((a, b) =>
