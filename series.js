@@ -37,7 +37,7 @@ function makePageForShows(seriesList) {
 // Create div for one series
 function makeSeries(series) {
   let image = series.image
-    ? series.image.medium.replace("http", "https")
+    ? series.image.medium
     : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
   let summary = series.summary
     ? series.summary
