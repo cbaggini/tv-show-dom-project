@@ -1,6 +1,6 @@
 // Global variables referring to event listeners functions (sort by name and sort by rating)
-var nameHandler;
-var ratingHandler;
+let nameHandler;
+let ratingHandler;
 
 // Load series view
 function loadSeriesView(seriesList) {
