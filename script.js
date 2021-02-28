@@ -1,6 +1,6 @@
 // Setup initial view (series list)
 async function setup() {
-  let seriesList = await fetchData("https://api.tvmaze.com/shows");
+  let seriesList = await fetchData("https://api.tvmaze.com/shows?page=0");
   seriesList = seriesList.sort((a, b) =>
     a.name > b.name ? 1 : b.name > a.name ? -1 : 0
   );

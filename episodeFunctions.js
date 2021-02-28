@@ -85,6 +85,9 @@ function addSearchFunction() {
       let search = event.target.value;
       let episodes = document.querySelectorAll(".episodeSection");
       let selected = document.querySelector("#selected");
+      document
+        .querySelectorAll(".paginationBtn")
+        .forEach((el) => (el.style.border = "none"));
       // If nothing in search bar, show season 1 by default
       if (search === "") {
         for (let i = 0; i < episodes.length; i++) {
@@ -95,6 +98,7 @@ function addSearchFunction() {
           }
         }
         selected.innerHTML = "";
+        document.getElementById("01").style.border = "1px solid black";
       } else {
         let newEpisodes = [...episodes].filter(function (el) {
           return el.innerText.toLowerCase().includes(search.toLowerCase());
@@ -323,14 +327,18 @@ function filterEpisode() {
     .addEventListener("change", function (e) {
       let selectedEpisode = e.currentTarget.value;
       let episodes = document.querySelectorAll(".episodeSection");
+      document
+        .querySelectorAll(".paginationBtn")
+        .forEach((el) => (el.style.border = "none"));
       // If no episodes selected, show season 1
       if (selectedEpisode === "allEpisodes") {
+        document.getElementById("01").style.border = "1px solid black";
         for (let i = 0; i < episodes.length; i++) {
-          episodes[i].style.display = "none";
-        }
-        let season1 = document.querySelectorAll(`[id^="S01"]`);
-        for (let i = 0; i < season1.length; i++) {
-          season1[i].style.display = "block";
+          if (episodes[i].id.includes("S01")) {
+            episodes[i].style.display = "block";
+          } else {
+            episodes[i].style.display = "none";
+          }
         }
       } else {
         // Remove any existing episode search
