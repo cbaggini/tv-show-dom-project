@@ -16,6 +16,7 @@ function addEpisodeClick(className) {
 function loadEpisodeView(series, color, seriesName) {
   const seriesView = document.getElementById("series");
   seriesView.style.display = "none";
+  // If credits already present, remove them
   const oldCredits = document.getElementById("credits");
   if (oldCredits) {
     oldCredits.remove();
@@ -23,29 +24,31 @@ function loadEpisodeView(series, color, seriesName) {
   const seriesSearch = document.getElementById("seriesSearchBar");
   seriesSearch.style.display = "none";
   createSearchBar();
+  // If episode view for that show already stored in session, use that, otherwise call API
   if (sessionStorage.getItem(series) === null) {
     fetchData(series).then((allEpisodes) => {
       sessionStorage.setItem(series, JSON.stringify(allEpisodes));
-      makePageForEpisodes(allEpisodes, color, seriesName, series);
-      addSearchFunction();
-      loadFilter(allEpisodes);
-      filterEpisode();
-      addCast(series, color);
-      history.pushState(null, null, "episodes");
+      makeEpisodeView(allEpisodes, color, seriesName, series);
     });
   } else {
     let storedEpisodes = JSON.parse(sessionStorage.getItem(series));
-    makePageForEpisodes(storedEpisodes, color, seriesName, series);
-    addSearchFunction();
-    loadFilter(storedEpisodes);
-    filterEpisode();
-    addCast(series, color);
-    history.pushState(null, null, "episodes");
+    makeEpisodeView(storedEpisodes, color, seriesName, series);
   }
+}
+
+// Create episode page and add episode selector + filter
+function makeEpisodeView(allEpisodes, color, seriesName, series) {
+  makePageForEpisodes(allEpisodes, color, seriesName, series);
+  addSearchFunction();
+  loadFilter(allEpisodes);
+  filterEpisode();
+  addCast(series, color);
+  history.pushState(null, null, "episodes");
 }
 
 // Create search bar for episodes
 function createSearchBar() {
+  // If a search bar is already present, remove it
   const oldSearch = document.getElementById("searchBar");
   if (oldSearch) {
     oldSearch.remove();
@@ -82,6 +85,7 @@ function addSearchFunction() {
       let search = event.target.value;
       let episodes = document.querySelectorAll(".episodeSection");
       let selected = document.querySelector("#selected");
+      // If nothing in search bar, show season 1 by default
       if (search === "") {
         for (let i = 0; i < episodes.length; i++) {
           if (episodes[i].id.includes("S01")) {
@@ -138,13 +142,16 @@ function readLess() {
 // Load episodes
 function makePageForEpisodes(episodeList, color, seriesName, series) {
   const rootElem = document.getElementById("root");
-  let existingEpisodes = document.querySelector(".episodes");
+  // If episode view already exists, remove it
+  const existingEpisodes = document.querySelector(".episodes");
   if (existingEpisodes) {
     existingEpisodes.remove();
   }
   const episodes = document.createElement("div");
   episodes.classList = "episodes";
+  // Create page title and cast listing div
   let str = `<h1>${seriesName}</h1> <article class="cast"></article>`;
+  // Make array of seasons and create pagination buttons to only show selected season
   const uniqueSeries = episodeList
     .map((el) => String(el.season).padStart(2, "0"))
     .filter((value, index, arr) => arr.indexOf(value) === index);
@@ -153,6 +160,7 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
     str += `<button type="button" class="paginationBtn" style="background-color: ${color}; border: 1px solid ${color}"id="${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
   }
   str += "</div>";
+  // Add episodes HTML to page
   const maxLength = 200;
   const seriesId = series.slice(29, series.indexOf("/episodes"));
   for (let i = 0; i < episodeList.length; i++) {
@@ -170,16 +178,18 @@ function createEpisode(episode, maxLength, seriesId) {
   let episodeCode = `S${String(episode.season).padStart(2, "0")}E${String(
     episode.number
   ).padStart(2, "0")}`;
+  // Assign default values to image and summary if they are not present
   let image = episode.image
     ? episode.image.medium
     : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
   let summary = episode.summary
     ? episode.summary
     : "<p>Summary not available</p>";
-
+  // Create HTML for episode section
   str += `<section id=${episodeCode} class="episodeSection">
 			<div class="title"><h4>${episodeCode} - ${episode.name}</h4></div>
 			<img class="episodeImage" src=${image}>`;
+  // If episode summary is longer than maxLength characters, put a read more button at the bottom of episode summary
   if (summary.length <= maxLength) {
     str += `<article class="episodeArticle">${summary}</article>`;
   } else {
@@ -193,6 +203,7 @@ function createEpisode(episode, maxLength, seriesId) {
       )}</span>
 			<p class="read" onclick="readLess()" style="display: none;">Read less</p>`;
   }
+  // Check if comments already stored in session storage; if they are, render them
   if (sessionStorage.getItem(`${seriesId}${episodeCode}`) !== null) {
     let obj = JSON.parse(sessionStorage.getItem(`${seriesId}${episodeCode}`));
     str += '<p class="episodeComment"><strong>Comments:</strong></p>';
@@ -200,6 +211,7 @@ function createEpisode(episode, maxLength, seriesId) {
       str += `<p class="episodeComment">${obj[i]}</p>`;
     }
   }
+  // Add buttons and textbox to add new comments
   str += `<button class="commentEpisode">Add comment</button>
 			<div class="newComment" style="display: none;"><textarea></textarea><button class="sendComment">Save</button></div>
 			</section>`;
@@ -216,17 +228,20 @@ function addComments(series, color) {
       "click",
       function () {
         eps[i].lastElementChild.style.display = "flex";
+        // Add event listener to save comment button
         eps[i].lastElementChild.lastElementChild.addEventListener(
           "click",
           function (e) {
             eps[i].lastElementChild.style.display = "none";
             let seriesId = series.slice(29, series.indexOf("/episodes"));
             let txt = e.target.previousElementSibling.value;
+            // If comment is not empty, save it to session storage and render it on the page
             if (txt.length > 0) {
               let comment = document.createElement("p");
               comment.classList = "episodeComment";
               comment.innerText = txt;
               let episodeCode = eps[i].id;
+              // If no other comments saved in session storage, create new comment array
               if (
                 sessionStorage.getItem(`${seriesId}${episodeCode}`) === null
               ) {
@@ -270,9 +285,11 @@ function showSelectedSeason(uniqueSeries, color) {
   document.querySelector("#searchBar").style.backgroundColor = color;
   let season1 = document.querySelectorAll(`[id^="S01"]`);
   document.querySelector(".paginationBtn").style.border = "1px solid black";
+  // Show season 1 when episode view loads
   for (let i = 0; i < season1.length; i++) {
     season1[i].style.display = "block";
   }
+  // Add event listener to select the season to make visible
   for (let i = 0; i < uniqueSeries.length; i++) {
     document
       .getElementById(`${uniqueSeries[i]}`)
@@ -291,6 +308,10 @@ function showSelectedSeason(uniqueSeries, color) {
         for (let i = 0; i < episodeSeason.length; i++) {
           episodeSeason[i].style.display = "block";
         }
+        // Remove any existing episode search
+        let selected = document.querySelector("#selected");
+        selected.innerHTML = "";
+        document.querySelector("input").value = "";
       });
   }
 }
@@ -302,6 +323,7 @@ function filterEpisode() {
     .addEventListener("change", function (e) {
       let selectedEpisode = e.currentTarget.value;
       let episodes = document.querySelectorAll(".episodeSection");
+      // If no episodes selected, show season 1
       if (selectedEpisode === "allEpisodes") {
         for (let i = 0; i < episodes.length; i++) {
           episodes[i].style.display = "none";
@@ -311,9 +333,11 @@ function filterEpisode() {
           season1[i].style.display = "block";
         }
       } else {
+        // Remove any existing episode search
         let selected = document.querySelector("#selected");
         selected.innerHTML = "";
         document.querySelector("input").value = "";
+        // Show selected episode
         let showEpisode = document.querySelector(`#${selectedEpisode}`);
         for (let i = 0; i < episodes.length; i++) {
           episodes[i].style.display = "none";

@@ -34,14 +34,16 @@ function makePageForShows(seriesList) {
   rootElem.append(series);
 }
 
-// Create div for one series
+// Create HTML for one series
 function makeSeries(series) {
+  // Give default value for image, runtime and summary if not present
   let image = series.image
     ? series.image.medium
     : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
   let summary = series.summary
     ? series.summary
     : "<p>Summary not available</p>";
+  let runtime = series.runtime || "Unavailable";
   return `<section class="seriesClass" id="https://api.tvmaze.com/shows/${
     series.id
   }/episodes" style="background-color: rgb(80, 80, 80);">
@@ -53,7 +55,7 @@ function makeSeries(series) {
 					<p><strong>Rated:&nbsp;</strong>${series.rating.average}</p>
 					<p><strong>Genres:&nbsp;</strong>${series.genres.join(" | ")}</p>
 					<p><strong>Status:&nbsp;</strong>${series.status}</p>
-					<p><strong>Runtime:&nbsp;</strong>${series.runtime}</p>
+					<p><strong>Runtime:&nbsp;</strong>${runtime}</p>
 				</aside>
 			</div>
 			</section>`;
@@ -168,6 +170,7 @@ function addSeriesSearchFunction(seriesList) {
       let search = event.target.value;
       let series = document.querySelectorAll(".seriesClass");
       let selected = document.querySelector("#selectedSeries");
+      // If nothing in search input, show all series
       if (search === "") {
         for (let i = 0; i < series.length; i++) {
           series[i].style.display = "flex";
@@ -177,9 +180,11 @@ function addSeriesSearchFunction(seriesList) {
         alphabeticSort(seriesList);
         ratingSort(seriesList);
       } else {
+        // Make all shows invisible
         for (let i = 0; i < series.length; i++) {
           series[i].style.display = "none";
         }
+        // Filter complete series list
         let newSeriesList = seriesList.filter(function (el) {
           return (
             (el.name
@@ -191,6 +196,7 @@ function addSeriesSearchFunction(seriesList) {
           );
         });
         selected.innerHTML = `found ${newSeriesList.length} shows`;
+        // Sort filtered series list depending on which sorting method is currently selected
         if (document.getElementById("rating").checked === true) {
           newSeriesList = newSeriesList.sort((a, b) =>
             a.rating.average < b.rating.average
@@ -204,6 +210,7 @@ function addSeriesSearchFunction(seriesList) {
             a.name > b.name ? 1 : b.name > a.name ? -1 : 0
           );
         }
+        // Alter order of selected shows and make them visible
         for (let i = 0; i < newSeriesList.length; i++) {
           let el = document.getElementById(
             `https://api.tvmaze.com/shows/${newSeriesList[i].id}/episodes`
