@@ -46,7 +46,7 @@ function makeSeries(series) {
   let runtime = series.runtime || "Unavailable";
   return `<section class="seriesClass" id="https://api.tvmaze.com/shows/${
     series.id
-  }/episodes" style="background-color: rgb(80, 80, 80);">
+  }/episodes">
 			<div class="seriesTitle"><h1>${series.name}</h1></div>
 			<div class="seriesDescription">
 				<img class="seriesImage" src=${image}>
