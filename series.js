@@ -50,7 +50,7 @@ function makeSeries(series) {
 			<div class="seriesTitle"><h1>${series.name}</h1></div>
 			<div class="seriesDescription">
 				<img class="seriesImage" src=${image}>
-				<article class="seriesArticle"><p>${summary}</p><i class="fa fa-heart-o" onclick="toggleLike()" style="font-size:24px;"></i></article>
+				<article class="seriesArticle"><p>${summary}</p><i class="fa fa-heart-o" onclick="toggleLike(event)" style="font-size:24px;"></i></article>
 				<aside>
 					<p><strong>Rated:&nbsp;</strong>${series.rating.average}</p>
 					<p><strong>Genres:&nbsp;</strong>${series.genres.join(" | ")}</p>
@@ -62,12 +62,12 @@ function makeSeries(series) {
 }
 
 // Like/unlike show
-function toggleLike() {
-  event.stopPropagation();
-  if (event.target.className === "fa fa-heart-o") {
-    event.target.className = "fa fa-heart";
+function toggleLike(e) {
+  e.stopPropagation();
+  if (e.target.className === "fa fa-heart-o") {
+    e.target.className = "fa fa-heart";
   } else {
-    event.target.className = "fa fa-heart-o";
+    e.target.className = "fa fa-heart-o";
   }
 }
 
