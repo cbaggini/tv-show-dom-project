@@ -2,17 +2,14 @@
 function addCast(series, color) {
   let article = document.querySelector(".cast");
   article.style.backgroundColor = color;
-  const seriesId = series.slice(29, series.indexOf("/episodes"));
   // If cast listing already stored in session, use that, otherwise call API
-  if (sessionStorage.getItem(`cast${seriesId}`) === null) {
-    fetchData(`https://api.tvmaze.com/shows/${seriesId}/cast`).then(
-      (allCast) => {
-        sessionStorage.setItem(`cast${seriesId}`, JSON.stringify(allCast));
-        article.innerHTML = createCastListing(allCast);
-      }
-    );
+  if (sessionStorage.getItem(`cast${series}`) === null) {
+    fetchData(`https://api.tvmaze.com/shows/${series}/cast`).then((allCast) => {
+      sessionStorage.setItem(`cast${series}`, JSON.stringify(allCast));
+      article.innerHTML = createCastListing(allCast);
+    });
   } else {
-    let storedCast = JSON.parse(sessionStorage.getItem(`cast${seriesId}`));
+    let storedCast = JSON.parse(sessionStorage.getItem(`cast${series}`));
     article.innerHTML = createCastListing(storedCast);
   }
 }
@@ -22,7 +19,8 @@ function createCastListing(allCast) {
   const maxLen = allCast.length > 9 ? 9 : allCast.length;
   let str = "<h2>Cast</h2><div>";
   for (let i = 0; i < maxLen; i++) {
-    str += `<p class="actors"><a onclick = "getCredit('${allCast[i].person.id}','${allCast[i].person.name}')">${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`;
+    str += `<p class="actors"><a onclick = "getCredit('${allCast[i].person.id}','${allCast[i].person.name}')">
+	${allCast[i].person.name}</a> as ${allCast[i].character.name}</p>`;
   }
   str += "</div>";
   return str;
@@ -80,9 +78,7 @@ function createCredits(credits, castName) {
   creditDiv.id = "credits";
   creditDiv.innerHTML = `<h1>${castName}</h1>`;
   for (let i = 0; i < credits.length; i++) {
-    let series = document.getElementById(
-      `https://api.tvmaze.com/shows/${credits[i]._embedded.show.id}/episodes`
-    );
+    let series = document.getElementById(credits[i]._embedded.show.id);
     // Only keep series that are in provided series JSON file
     if (series) {
       let cln = series.cloneNode(true);

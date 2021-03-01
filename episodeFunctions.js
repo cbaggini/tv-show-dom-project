@@ -25,13 +25,24 @@ function loadEpisodeView(series, color, seriesName) {
   seriesSearch.style.display = "none";
   createSearchBar();
   // If episode view for that show already stored in session, use that, otherwise call API
-  if (sessionStorage.getItem(series) === null) {
-    fetchData(series).then((allEpisodes) => {
-      sessionStorage.setItem(series, JSON.stringify(allEpisodes));
-      makeEpisodeView(allEpisodes, color, seriesName, series);
-    });
+  if (
+    sessionStorage.getItem(
+      `https://api.tvmaze.com/shows/${series}/episodes`
+    ) === null
+  ) {
+    fetchData(`https://api.tvmaze.com/shows/${series}/episodes`).then(
+      (allEpisodes) => {
+        sessionStorage.setItem(
+          `https://api.tvmaze.com/shows/${series}/episodes`,
+          JSON.stringify(allEpisodes)
+        );
+        makeEpisodeView(allEpisodes, color, seriesName, series);
+      }
+    );
   } else {
-    let storedEpisodes = JSON.parse(sessionStorage.getItem(series));
+    let storedEpisodes = JSON.parse(
+      sessionStorage.getItem(`https://api.tvmaze.com/shows/${series}/episodes`)
+    );
     makeEpisodeView(storedEpisodes, color, seriesName, series);
   }
 }
@@ -161,14 +172,15 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
     .filter((value, index, arr) => arr.indexOf(value) === index);
   str += `<div class="paginate">`;
   for (let i = 0; i < uniqueSeries.length; i++) {
-    str += `<button type="button" class="paginationBtn" style="background-color: ${color}; border: 1px solid ${color}"id="${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
+    str += `<button type="button" class="paginationBtn" 
+	style="background-color: ${color}; border: 1px solid ${color}" 
+	id="${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
   }
   str += "</div>";
   // Add episodes HTML to page
   const maxLength = 200;
-  const seriesId = series.slice(29, series.indexOf("/episodes"));
   for (let i = 0; i < episodeList.length; i++) {
-    str += createEpisode(episodeList[i], maxLength, seriesId);
+    str += createEpisode(episodeList[i], maxLength, series);
   }
   episodes.innerHTML = str;
   rootElem.append(episodes);
@@ -237,7 +249,6 @@ function addComments(series, color) {
           "click",
           function (e) {
             eps[i].lastElementChild.style.display = "none";
-            let seriesId = series.slice(29, series.indexOf("/episodes"));
             let txt = e.target.previousElementSibling.value;
             // If comment is not empty, save it to session storage and render it on the page
             if (txt.length > 0) {
@@ -246,12 +257,10 @@ function addComments(series, color) {
               comment.innerText = txt;
               let episodeCode = eps[i].id;
               // If no other comments saved in session storage, create new comment array
-              if (
-                sessionStorage.getItem(`${seriesId}${episodeCode}`) === null
-              ) {
+              if (sessionStorage.getItem(`${series}${episodeCode}`) === null) {
                 let commentArray = [txt];
                 sessionStorage.setItem(
-                  `${seriesId}${episodeCode}`,
+                  `${series}${episodeCode}`,
                   JSON.stringify(commentArray)
                 );
                 let commentTitle = document.createElement("p");
@@ -263,11 +272,11 @@ function addComments(series, color) {
                 );
               } else {
                 let obj = JSON.parse(
-                  sessionStorage.getItem(`${seriesId}${episodeCode}`)
+                  sessionStorage.getItem(`${series}${episodeCode}`)
                 );
                 obj.push(txt);
                 sessionStorage.setItem(
-                  `${seriesId}${episodeCode}`,
+                  `${series}${episodeCode}`,
                   JSON.stringify(obj)
                 );
               }

@@ -44,9 +44,7 @@ function makeSeries(series) {
     ? series.summary
     : "<p>Summary not available</p>";
   let runtime = series.runtime || "Unavailable";
-  return `<section class="seriesClass" id="https://api.tvmaze.com/shows/${
-    series.id
-  }/episodes">
+  return `<section class="seriesClass" id="${series.id}">
 			<div class="seriesTitle"><h1>${series.name}</h1></div>
 			<div class="seriesDescription">
 				<img class="seriesImage" src=${image}>
@@ -118,19 +116,20 @@ function alphabeticSort(seriesList) {
   targetEl.addEventListener("change", nameHandler);
 }
 
-// function to sort series by name
+// function to rearrange series by name
 function sortByName(seriesList) {
   document.getElementById("alphabetic").checked = true;
   document.getElementById("rating").checked = false;
-  seriesList = seriesList.sort((a, b) =>
-    a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-  );
+  seriesList = nameSort(seriesList);
   for (let i = 0; i < seriesList.length; i++) {
-    document.getElementById(
-      `https://api.tvmaze.com/shows/${seriesList[i].id}/episodes`
-    ).style.order = `${i + 1}`;
+    document.getElementById(seriesList[i].id).style.order = `${i + 1}`;
   }
   loadSeriesFilter(seriesList);
+}
+
+// function to sort series by name
+function nameSort(arr) {
+  return arr.sort((a, b) => a.name > b.name);
 }
 
 // Add event listener to sort series by rating
@@ -143,23 +142,20 @@ function ratingSort(seriesList) {
   targetEl.addEventListener("change", ratingHandler);
 }
 
-// Function to sort series by rating
+// Function to arrange series by rating
 function sortByRating(seriesList) {
   document.getElementById("alphabetic").checked = false;
   document.getElementById("rating").checked = true;
-  seriesList = seriesList.sort((a, b) =>
-    a.rating.average < b.rating.average
-      ? 1
-      : b.rating.average < a.rating.average
-      ? -1
-      : 0
-  );
+  seriesList = ratingSortArr(seriesList);
   for (let i = 0; i < seriesList.length; i++) {
-    document.getElementById(
-      `https://api.tvmaze.com/shows/${seriesList[i].id}/episodes`
-    ).style.order = `${i + 1}`;
+    document.getElementById(seriesList[i].id).style.order = `${i + 1}`;
   }
   loadSeriesFilter(seriesList);
+}
+
+// Function to sort series by rating
+function ratingSortArr(arr) {
+  return arr.sort((a, b) => a.rating.average < b.rating.average);
 }
 
 // Search series
@@ -198,23 +194,13 @@ function addSeriesSearchFunction(seriesList) {
         selected.innerHTML = `found ${newSeriesList.length} shows`;
         // Sort filtered series list depending on which sorting method is currently selected
         if (document.getElementById("rating").checked === true) {
-          newSeriesList = newSeriesList.sort((a, b) =>
-            a.rating.average < b.rating.average
-              ? 1
-              : b.rating.average < a.rating.average
-              ? -1
-              : 0
-          );
+          newSeriesList = ratingSortArr(newSeriesList);
         } else {
-          newSeriesList = newSeriesList.sort((a, b) =>
-            a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-          );
+          newSeriesList = nameSort(newSeriesList);
         }
         // Alter order of selected shows and make them visible
         for (let i = 0; i < newSeriesList.length; i++) {
-          let el = document.getElementById(
-            `https://api.tvmaze.com/shows/${newSeriesList[i].id}/episodes`
-          );
+          let el = document.getElementById(newSeriesList[i].id);
           el.style.order = `${i + 1}`;
           el.style.display = "flex";
         }
