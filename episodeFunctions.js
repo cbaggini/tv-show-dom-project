@@ -13,7 +13,7 @@ function addEpisodeClick(className) {
 }
 
 // Load episode view
-function loadEpisodeView(series, color, seriesName) {
+async function loadEpisodeView(series, color, seriesName) {
   const seriesView = document.getElementById("series");
   seriesView.style.display = "none";
   // If credits already present, remove them
@@ -30,15 +30,14 @@ function loadEpisodeView(series, color, seriesName) {
       `https://api.tvmaze.com/shows/${series}/episodes`
     ) === null
   ) {
-    fetchData(`https://api.tvmaze.com/shows/${series}/episodes`).then(
-      (allEpisodes) => {
-        sessionStorage.setItem(
-          `https://api.tvmaze.com/shows/${series}/episodes`,
-          JSON.stringify(allEpisodes)
-        );
-        makeEpisodeView(allEpisodes, color, seriesName, series);
-      }
+    const allEpisodes = await fetchData(
+      `https://api.tvmaze.com/shows/${series}/episodes`
     );
+    sessionStorage.setItem(
+      `https://api.tvmaze.com/shows/${series}/episodes`,
+      JSON.stringify(allEpisodes)
+    );
+    makeEpisodeView(allEpisodes, color, seriesName, series);
   } else {
     let storedEpisodes = JSON.parse(
       sessionStorage.getItem(`https://api.tvmaze.com/shows/${series}/episodes`)

@@ -11,13 +11,14 @@ async function setup() {
 
 // Fetch data from api
 async function fetchData(url) {
-  let result;
-  await fetch(url)
-    .then((response) => response.json())
-    .then((data) => (result = data))
-    .catch((error) => console.log(error));
-  console.log(`You queried the API at ${Date()}`);
-  return result;
+  try {
+    const response = await fetch(url);
+    const data = response.json();
+    console.log(`You queried the API at ${Date()}`);
+    return data;
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 window.onload = setup;

@@ -1,13 +1,14 @@
 // Add cast listing to series page
-function addCast(series, color) {
+async function addCast(series, color) {
   let article = document.querySelector(".cast");
   article.style.backgroundColor = color;
   // If cast listing already stored in session, use that, otherwise call API
   if (sessionStorage.getItem(`cast${series}`) === null) {
-    fetchData(`https://api.tvmaze.com/shows/${series}/cast`).then((allCast) => {
-      sessionStorage.setItem(`cast${series}`, JSON.stringify(allCast));
-      article.innerHTML = createCastListing(allCast);
-    });
+    const allCast = await fetchData(
+      `https://api.tvmaze.com/shows/${series}/cast`
+    );
+    sessionStorage.setItem(`cast${series}`, JSON.stringify(allCast));
+    article.innerHTML = createCastListing(allCast);
   } else {
     let storedCast = JSON.parse(sessionStorage.getItem(`cast${series}`));
     article.innerHTML = createCastListing(storedCast);
@@ -38,7 +39,7 @@ function removeDuplicatesBy(keyFn, array) {
 }
 
 // Create cast credit view
-function getCredit(castId, castName) {
+async function getCredit(castId, castName) {
   // make episode view invisible
   const episodeView = document.querySelector(".episodes");
   episodeView.style.display = "none";
@@ -52,16 +53,15 @@ function getCredit(castId, castName) {
   }
   // If actor page already stored in session, use that, otherwise call API
   if (sessionStorage.getItem(`credit${castId}`) === null) {
-    fetchData(
+    let credits = await fetchData(
       `https://api.tvmaze.com/people/${castId}/castcredits?embed=show`
-    ).then((credits) => {
-      credits = removeDuplicatesBy((x) => x._embedded.show.id, credits);
-      sessionStorage.setItem(`credit${castId}`, JSON.stringify(credits));
-      const creditDiv = createCredits(credits, castName);
-      rootElem.append(creditDiv);
-      addEpisodeClick("creditsClass");
-      history.pushState(null, null, "credits");
-    });
+    );
+    credits = removeDuplicatesBy((x) => x._embedded.show.id, credits);
+    sessionStorage.setItem(`credit${castId}`, JSON.stringify(credits));
+    const creditDiv = createCredits(credits, castName);
+    rootElem.append(creditDiv);
+    addEpisodeClick("creditsClass");
+    history.pushState(null, null, "credits");
   } else {
     let storedCredits = JSON.parse(sessionStorage.getItem(`credit${castId}`));
     const creditDiv = createCredits(storedCredits, castName);
