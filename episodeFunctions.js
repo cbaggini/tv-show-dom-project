@@ -173,7 +173,7 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
   for (let i = 0; i < uniqueSeries.length; i++) {
     str += `<button type="button" class="paginationBtn" 
 	style="background-color: ${color}; border: 1px solid ${color}" 
-	id="${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
+	id="code${uniqueSeries[i]}">Series ${uniqueSeries[i]}</button>`;
   }
   str += "</div>";
   // Add episodes HTML to page
@@ -304,7 +304,7 @@ function showSelectedSeason(uniqueSeries, color) {
   // Add event listener to select the season to make visible
   for (let i = 0; i < uniqueSeries.length; i++) {
     document
-      .getElementById(`${uniqueSeries[i]}`)
+      .getElementById(`code${uniqueSeries[i]}`)
       .addEventListener("click", function (e) {
         document
           .querySelectorAll(".paginationBtn")
