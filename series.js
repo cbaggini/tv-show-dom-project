@@ -39,7 +39,7 @@ function makeSeries(series) {
   // Give default value for image, runtime and summary if not present
   let image = series.image
     ? series.image.medium
-    : "http://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
+    : "https://via.placeholder.com/210x295/0000FF/808080/?Text=Image%20not%20available";
   let summary = series.summary
     ? series.summary
     : "<p>Summary not available</p>";

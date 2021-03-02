@@ -196,7 +196,7 @@ function createEpisode(episode, maxLength, seriesId) {
   // Assign default values to image and summary if they are not present
   let image = episode.image
     ? episode.image.medium
-    : "http://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
+    : "https://via.placeholder.com/250x140/0000FF/808080/?Text=Image%20not%20available";
   let summary = episode.summary
     ? episode.summary
     : "<p>Summary not available</p>";
