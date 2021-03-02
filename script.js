@@ -1,8 +1,8 @@
 // Setup initial view (series list)
 async function setup() {
   let seriesList = await fetchData("https://api.tvmaze.com/shows?page=0");
-  seriesList = nameSort(seriesList);
-  loadSeriesView(seriesList);
+  seriesList = Series.nameSort(seriesList);
+  Series.loadSeriesView(seriesList);
   history.pushState({ page_id: "series" }, null, "series");
   document.getElementById("alphabetic").checked = true;
 }
