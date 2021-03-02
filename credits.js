@@ -52,23 +52,20 @@ async function getCredit(castId, castName) {
     oldCredits.remove();
   }
   // If actor page already stored in session, use that, otherwise call API
+  let credits;
   if (sessionStorage.getItem(`credit${castId}`) === null) {
-    let credits = await fetchData(
+    credits = await fetchData(
       `https://api.tvmaze.com/people/${castId}/castcredits?embed=show`
     );
     credits = removeDuplicatesBy((x) => x._embedded.show.id, credits);
     sessionStorage.setItem(`credit${castId}`, JSON.stringify(credits));
-    const creditDiv = createCredits(credits, castName);
-    rootElem.append(creditDiv);
-    addEpisodeClick("creditsClass");
-    history.pushState(null, null, "credits");
   } else {
-    let storedCredits = JSON.parse(sessionStorage.getItem(`credit${castId}`));
-    const creditDiv = createCredits(storedCredits, castName);
-    rootElem.append(creditDiv);
-    addEpisodeClick("creditsClass");
-    history.pushState(null, null, "credits");
+    credits = JSON.parse(sessionStorage.getItem(`credit${castId}`));
   }
+  const creditDiv = createCredits(credits, castName);
+  rootElem.append(creditDiv);
+  addEpisodeClick("creditsClass");
+  history.pushState({ page_id: "credits" }, null, "credits");
 }
 
 // Create HTML for credits view

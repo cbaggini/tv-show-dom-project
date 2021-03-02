@@ -7,7 +7,7 @@ function addEpisodeClick(className) {
       let color = seriesList[i].style.backgroundColor;
       let seriesName = seriesList[i].children[0].innerText;
       loadEpisodeView(series, color, seriesName);
-      history.pushState(null, null, "episodes");
+      history.pushState({ page_id: "episodes" }, null, "episodes");
     });
   }
 }
@@ -53,7 +53,7 @@ function makeEpisodeView(allEpisodes, color, seriesName, series) {
   loadFilter(allEpisodes);
   filterEpisode();
   addCast(series, color);
-  history.pushState(null, null, "episodes");
+  history.pushState({ page_id: "episodes" }, null, "episodes");
 }
 
 // Create search bar for episodes
@@ -83,7 +83,7 @@ function backToSeries() {
     seriesView.style.display = "flex";
     const seriesSearch = document.getElementById("seriesSearchBar");
     seriesSearch.style.display = "flex";
-    history.pushState(null, null, "series");
+    history.pushState({ page_id: "series" }, null, "series");
   });
 }
 
@@ -163,6 +163,7 @@ function makePageForEpisodes(episodeList, color, seriesName, series) {
   }
   const episodes = document.createElement("div");
   episodes.classList = "episodes";
+  episodes.id = "eps";
   // Create page title and cast listing div
   let str = `<h1>${seriesName}</h1> <article class="cast"></article>`;
   // Make array of seasons and create pagination buttons to only show selected season

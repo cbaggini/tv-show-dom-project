@@ -3,7 +3,7 @@ async function setup() {
   let seriesList = await fetchData("https://api.tvmaze.com/shows?page=0");
   seriesList = nameSort(seriesList);
   loadSeriesView(seriesList);
-  history.pushState(null, null, "series");
+  history.pushState({ page_id: "series" }, null, "series");
   document.getElementById("alphabetic").checked = true;
 }
 
@@ -18,5 +18,15 @@ async function fetchData(url) {
     console.log(err);
   }
 }
+
+window.onpopstate = function () {
+  if (document.location.pathname === "/episodes") {
+    document.getElementById("seriesSearchBar").style.display = "flex";
+    document.getElementById("series").style.display = "flex";
+    document.getElementById("searchBar").style.display = "none";
+    document.getElementById("eps").style.display = "none";
+    history.pushState({ page_id: "series" }, null, "series");
+  }
+};
 
 window.onload = setup;
