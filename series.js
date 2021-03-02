@@ -28,14 +28,14 @@ function makePageForShows(seriesList) {
   series.id = "series";
   let str = "";
   for (let i = 0; i < seriesList.length; i++) {
-    str += makeSeries(seriesList[i]);
+    str += makeSeries(seriesList[i], i);
   }
   series.innerHTML = str;
   rootElem.append(series);
 }
 
 // Create HTML for one series
-function makeSeries(series) {
+function makeSeries(series, index) {
   // Give default value for image, runtime and summary if not present
   let image = series.image
     ? series.image.medium
@@ -44,7 +44,7 @@ function makeSeries(series) {
     ? series.summary
     : "<p>Summary not available</p>";
   let runtime = series.runtime || "Unavailable";
-  return `<section class="seriesClass" id="${series.id}">
+  return `<section class="seriesClass" id="${series.id}" order="${index + 1}">
 			<div class="seriesTitle"><h1>${series.name}</h1></div>
 			<div class="seriesDescription">
 				<img class="seriesImage" src=${image}>
@@ -129,7 +129,15 @@ function sortByName(seriesList) {
 
 // function to sort series by name
 function nameSort(arr) {
-  return arr.sort((a, b) => a.name > b.name);
+  return arr.sort((a, b) => {
+    if (a.name.toLowerCase() > b.name.toLowerCase()) {
+      return 1;
+    } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
 }
 
 // Add event listener to sort series by rating
@@ -166,9 +174,19 @@ function addSeriesSearchFunction(seriesList) {
       let search = event.target.value;
       let series = document.querySelectorAll(".seriesClass");
       let selected = document.querySelector("#selectedSeries");
+      let filteredSeries;
       // If nothing in search input, show all series
       if (search === "") {
-        for (let i = 0; i < series.length; i++) {
+        // Sort filtered series list depending on which sorting method is currently selected
+        if (document.getElementById("rating").checked === true) {
+          seriesList = ratingSortArr(seriesList);
+        } else {
+          seriesList = nameSort(seriesList);
+        }
+        // Alter order of selected shows and make them visible
+        for (let i = 0; i < seriesList.length; i++) {
+          let el = document.getElementById(seriesList[i].id);
+          el.style.order = `${i + 1}`;
           series[i].style.display = "flex";
         }
         loadSeriesFilter(seriesList);
@@ -191,7 +209,6 @@ function addSeriesSearchFunction(seriesList) {
               : false)
           );
         });
-        selected.innerHTML = `found ${newSeriesList.length} shows`;
         // Sort filtered series list depending on which sorting method is currently selected
         if (document.getElementById("rating").checked === true) {
           newSeriesList = ratingSortArr(newSeriesList);
@@ -205,6 +222,7 @@ function addSeriesSearchFunction(seriesList) {
           el.style.display = "flex";
         }
         loadSeriesFilter(newSeriesList);
+        selected.innerHTML = `found ${newSeriesList.length} shows`;
         alphabeticSort(newSeriesList);
         ratingSort(newSeriesList);
       }
