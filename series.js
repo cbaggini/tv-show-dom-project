@@ -177,29 +177,14 @@ function addSeriesSearchFunction(seriesList) {
       let filteredSeries;
       // If nothing in search input, show all series
       if (search === "") {
-        // Sort filtered series list depending on which sorting method is currently selected
-        if (document.getElementById("rating").checked === true) {
-          seriesList = ratingSortArr(seriesList);
-        } else {
-          seriesList = nameSort(seriesList);
-        }
-        // Alter order of selected shows and make them visible
-        for (let i = 0; i < seriesList.length; i++) {
-          let el = document.getElementById(seriesList[i].id);
-          el.style.order = `${i + 1}`;
-          series[i].style.display = "flex";
-        }
-        loadSeriesFilter(seriesList);
-        selected.innerHTML = `found ${seriesList.length} shows`;
-        alphabeticSort(seriesList);
-        ratingSort(seriesList);
+        filteredSeries = seriesList;
       } else {
         // Make all shows invisible
         for (let i = 0; i < series.length; i++) {
           series[i].style.display = "none";
         }
         // Filter complete series list
-        let newSeriesList = seriesList.filter(function (el) {
+        filteredSeries = seriesList.filter(function (el) {
           return (
             (el.name
               ? el.name.toLowerCase().includes(search.toLowerCase())
@@ -209,23 +194,23 @@ function addSeriesSearchFunction(seriesList) {
               : false)
           );
         });
-        // Sort filtered series list depending on which sorting method is currently selected
-        if (document.getElementById("rating").checked === true) {
-          newSeriesList = ratingSortArr(newSeriesList);
-        } else {
-          newSeriesList = nameSort(newSeriesList);
-        }
-        // Alter order of selected shows and make them visible
-        for (let i = 0; i < newSeriesList.length; i++) {
-          let el = document.getElementById(newSeriesList[i].id);
-          el.style.order = `${i + 1}`;
-          el.style.display = "flex";
-        }
-        loadSeriesFilter(newSeriesList);
-        selected.innerHTML = `found ${newSeriesList.length} shows`;
-        alphabeticSort(newSeriesList);
-        ratingSort(newSeriesList);
       }
+      // Sort filtered series list depending on which sorting method is currently selected
+      if (document.getElementById("rating").checked === true) {
+        filteredSeries = ratingSortArr(filteredSeries);
+      } else {
+        filteredSeries = nameSort(filteredSeries);
+      }
+      // Alter order of selected shows and make them visible
+      for (let i = 0; i < filteredSeries.length; i++) {
+        let el = document.getElementById(filteredSeries[i].id);
+        el.style.order = `${i + 1}`;
+        el.style.display = "flex";
+      }
+      loadSeriesFilter(seriesList);
+      selected.innerHTML = `found ${filteredSeries.length} shows`;
+      alphabeticSort(seriesList);
+      ratingSort(seriesList);
     });
 }
 
