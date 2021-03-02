@@ -229,7 +229,7 @@ function filterSeries() {
 function loadSeriesFilter(seriesList) {
   let str = "";
   for (let i = 0; i < seriesList.length; i++) {
-    str += `<option value= "https://api.tvmaze.com/shows/${seriesList[i].id}/episodes">${seriesList[i].name}</option>`;
+    str += `<option value= "${seriesList[i].id}">${seriesList[i].name}</option>`;
   }
   document.querySelector("#seriesFilter").innerHTML = str;
 }
