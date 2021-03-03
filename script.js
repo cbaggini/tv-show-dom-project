@@ -5,6 +5,7 @@ async function setup() {
   Series.loadSeriesView(seriesList);
   history.pushState({ page_id: "series" }, null, "series");
   document.getElementById("alphabetic").checked = true;
+  window.path = "/series";
 }
 
 // Fetch data from api
@@ -20,12 +21,20 @@ async function fetchData(url) {
 }
 
 window.onpopstate = function () {
-  if (document.location.pathname === "/episodes") {
+  if (window.path === "/episodes") {
     document.getElementById("seriesSearchBar").style.display = "flex";
     document.getElementById("series").style.display = "flex";
     document.getElementById("searchBar").style.display = "none";
     document.getElementById("eps").style.display = "none";
     history.pushState({ page_id: "series" }, null, "series");
+    window.path = "/series";
+  } else if (window.path === "/credits") {
+    document.getElementById("seriesSearchBar").style.display = "none";
+    document.getElementById("series").style.display = "none";
+    document.getElementById("searchBar").style.display = "flex";
+    document.getElementById("eps").style.display = "flex";
+    history.pushState({ page_id: "episodes" }, null, "episodes");
+    window.path = "/episodes";
   }
 };
 

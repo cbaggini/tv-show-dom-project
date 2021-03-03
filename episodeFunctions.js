@@ -9,6 +9,7 @@ let Episodes = {
         let seriesName = seriesList[i].children[0].innerText;
         Episodes.loadEpisodeView(series, color, seriesName);
         history.pushState({ page_id: "episodes" }, null, "episodes");
+        window.path = "/episodes";
       });
     }
   },
@@ -57,6 +58,7 @@ let Episodes = {
     Episodes.filterEpisode();
     Credits.addCast(series, color);
     history.pushState({ page_id: "episodes" }, null, "episodes");
+    window.path = "/episodes";
   },
 
   // Create search bar for episodes
@@ -87,6 +89,7 @@ let Episodes = {
       const seriesSearch = document.getElementById("seriesSearchBar");
       seriesSearch.style.display = "flex";
       history.pushState({ page_id: "series" }, null, "series");
+      window.path = "/series";
     });
   },
 

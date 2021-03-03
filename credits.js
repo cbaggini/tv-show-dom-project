@@ -64,6 +64,7 @@ let Credits = {
     rootElem.append(creditDiv);
     Episodes.addEpisodeClick("creditsClass");
     history.pushState({ page_id: "credits" }, null, "credits");
+    window.path = "/credits";
   },
   // Create HTML for credits view
   createCredits: function (credits, castName) {
