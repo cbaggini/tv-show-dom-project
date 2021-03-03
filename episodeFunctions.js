@@ -245,33 +245,32 @@ let Episodes = {
       eps[i].style.display = "none";
       eps[i].lastElementChild.previousElementSibling.addEventListener(
         "click",
-        function () {
-          eps[i].lastElementChild.style.display = "flex";
-          // Add event listener to save comment button
-          eps[i].lastElementChild.lastElementChild.addEventListener(
-            "click",
-            function (e) {
-              eps[i].lastElementChild.style.display = "none";
-              let txt = e.target.previousElementSibling.value;
-              // If comment is not empty, save it to session storage and render it on the page
-              if (txt.length > 0) {
-                let comment = document.createElement("p");
-                comment.classList = "episodeComment";
-                comment.innerText = txt;
-                let episodeCode = eps[i].id;
-                // If no other comments saved in session storage, create new comment array
-                Episodes.addCommentArray(series, episodeCode, eps[i], txt);
-                eps[i].insertBefore(
-                  comment,
-                  eps[i].lastElementChild.previousElementSibling
-                );
-                e.target.previousElementSibling.value = "";
-              }
-            }
-          );
-        }
+        () => Episodes.addCommentEventListener(eps[i], series)
       );
     }
+  },
+
+  addCommentEventListener: function (ep, series) {
+    ep.lastElementChild.style.display = "flex";
+    // Add event listener to save comment button
+    ep.lastElementChild.lastElementChild.addEventListener(
+      "click",
+      function (e) {
+        ep.lastElementChild.style.display = "none";
+        let txt = e.target.previousElementSibling.value;
+        // If comment is not empty, save it to session storage and render it on the page
+        if (txt.length > 0) {
+          let comment = document.createElement("p");
+          comment.classList = "episodeComment";
+          comment.innerText = txt;
+          let episodeCode = ep.id;
+          // If no other comments saved in session storage, create new comment array
+          Episodes.addCommentArray(series, episodeCode, ep, txt);
+          ep.insertBefore(comment, ep.lastElementChild.previousElementSibling);
+          e.target.previousElementSibling.value = "";
+        }
+      }
+    );
   },
 
   addCommentArray: function (series, episodeCode, ep, txt) {
