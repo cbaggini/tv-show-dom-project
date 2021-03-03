@@ -260,31 +260,7 @@ let Episodes = {
                 comment.innerText = txt;
                 let episodeCode = eps[i].id;
                 // If no other comments saved in session storage, create new comment array
-                if (
-                  sessionStorage.getItem(`${series}${episodeCode}`) === null
-                ) {
-                  let commentArray = [txt];
-                  sessionStorage.setItem(
-                    `${series}${episodeCode}`,
-                    JSON.stringify(commentArray)
-                  );
-                  let commentTitle = document.createElement("p");
-                  commentTitle.classList = "episodeComment";
-                  commentTitle.innerHTML = "<strong>Comments:</strong>";
-                  eps[i].insertBefore(
-                    commentTitle,
-                    eps[i].lastElementChild.previousElementSibling
-                  );
-                } else {
-                  let obj = JSON.parse(
-                    sessionStorage.getItem(`${series}${episodeCode}`)
-                  );
-                  obj.push(txt);
-                  sessionStorage.setItem(
-                    `${series}${episodeCode}`,
-                    JSON.stringify(obj)
-                  );
-                }
+                Episodes.addCommentArray(series, episodeCode, eps[i], txt);
                 eps[i].insertBefore(
                   comment,
                   eps[i].lastElementChild.previousElementSibling
@@ -295,6 +271,24 @@ let Episodes = {
           );
         }
       );
+    }
+  },
+
+  addCommentArray: function (series, episodeCode, ep, txt) {
+    if (sessionStorage.getItem(`${series}${episodeCode}`) === null) {
+      let commentArray = [txt];
+      sessionStorage.setItem(
+        `${series}${episodeCode}`,
+        JSON.stringify(commentArray)
+      );
+      let commentTitle = document.createElement("p");
+      commentTitle.classList = "episodeComment";
+      commentTitle.innerHTML = "<strong>Comments:</strong>";
+      ep.insertBefore(commentTitle, ep.lastElementChild.previousElementSibling);
+    } else {
+      let obj = JSON.parse(sessionStorage.getItem(`${series}${episodeCode}`));
+      obj.push(txt);
+      sessionStorage.setItem(`${series}${episodeCode}`, JSON.stringify(obj));
     }
   },
 
