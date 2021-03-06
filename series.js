@@ -172,7 +172,7 @@ let Series = {
     document
       .querySelector("#seriesSearchInput")
       .addEventListener("input", function (event) {
-        let search = event.target.value;
+        let search = event.target.value.toLowerCase();
         let series = document.querySelectorAll(".seriesClass");
         let selected = document.querySelector("#selectedSeries");
         let filteredSeries;
@@ -187,12 +187,8 @@ let Series = {
           // Filter complete series list
           filteredSeries = seriesList.filter(function (el) {
             return (
-              (el.name
-                ? el.name.toLowerCase().includes(search.toLowerCase())
-                : false) ||
-              (el.summary
-                ? el.summary.toLowerCase().includes(search.toLowerCase())
-                : false)
+              (el.name ? el.name.toLowerCase().includes(search) : false) ||
+              (el.summary ? el.summary.toLowerCase().includes(search) : false)
             );
           });
         }

@@ -98,7 +98,7 @@ let Episodes = {
     document
       .querySelector("#searchInput")
       .addEventListener("input", function (event) {
-        let search = event.target.value;
+        let search = event.target.value.toLowerCase();
         let episodes = document.querySelectorAll(".episodeSection");
         let selected = document.querySelector("#selected");
         document
@@ -117,7 +117,7 @@ let Episodes = {
           document.getElementById("01").style.border = "1px solid black";
         } else {
           let newEpisodes = [...episodes].filter(function (el) {
-            return el.innerText.toLowerCase().includes(search.toLowerCase());
+            return el.innerText.toLowerCase().includes(search);
           });
           selected.innerHTML = `Displaying ${newEpisodes.length}/${episodes.length} episodes`;
           for (let i = 0; i < episodes.length; i++) {
