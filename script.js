@@ -22,6 +22,7 @@ async function fetchData(url) {
 
 window.onpopstate = function () {
   if (window.path === "/episodes") {
+    document.getElementById("credits").style.display = "none";
     document.getElementById("seriesSearchBar").style.display = "flex";
     document.getElementById("series").style.display = "flex";
     document.getElementById("searchBar").style.display = "none";
@@ -29,6 +30,7 @@ window.onpopstate = function () {
     history.pushState({ page_id: "series" }, null, "series");
     window.path = "/series";
   } else if (window.path === "/credits") {
+    document.getElementById("credits").style.display = "none";
     document.getElementById("seriesSearchBar").style.display = "none";
     document.getElementById("series").style.display = "none";
     document.getElementById("searchBar").style.display = "flex";
