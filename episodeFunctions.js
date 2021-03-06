@@ -132,31 +132,19 @@ let Episodes = {
   },
 
   // Read more function
-  readMore: function () {
-    let lnk = event.target;
-    lnk.style.display = "none";
-    let section = lnk.parentNode;
-    let readLess = section.children[5];
-    readLess.style.display = "block";
-    let span = section.children[4];
-    section.children[2].innerHTML = `<p>${
-      section.children[2].innerText + span.innerText
-    }</p>`;
+  readMore: function (episodeCode) {
+    document.getElementById(`readMore${episodeCode}`).style.display = "none";
+    document.getElementById(`croppedText${episodeCode}`).style.display = "none";
+    document.getElementById(`fullText${episodeCode}`).style.display = "flex";
+    document.getElementById(`readLess${episodeCode}`).style.display = "block";
   },
 
   // Read less function
-  readLess: function () {
-    let lnk = event.target;
-    lnk.style.display = "none";
-    let section = lnk.parentNode;
-    let readMore = section.children[3];
-    readMore.style.display = "block";
-    let article = section.children[2];
-    let maxLength = 200;
-    article.innerHTML = `<p>${article.innerText.slice(
-      0,
-      article.innerText.indexOf(" ", maxLength)
-    )}</p>`;
+  readLess: function (episodeCode) {
+    document.getElementById(`readMore${episodeCode}`).style.display = "block";
+    document.getElementById(`croppedText${episodeCode}`).style.display = "flex";
+    document.getElementById(`fullText${episodeCode}`).style.display = "none";
+    document.getElementById(`readLess${episodeCode}`).style.display = "none";
   },
 
   // Load episodes
@@ -212,18 +200,14 @@ let Episodes = {
 			<div class="title"><h4>${episodeCode} - ${episode.name}</h4></div>
 			<img class="episodeImage" src=${image}>`;
     // If episode summary is longer than maxLength characters, put a read more button at the bottom of episode summary
-    if (summary.length <= maxLength) {
+    let slicedSummary = summary.slice(0, summary.indexOf(" ", maxLength));
+    if (slicedSummary.length + 1 === summary.length) {
       str += `<article class="episodeArticle">${summary}</article>`;
     } else {
-      str += `<article class="episodeArticle">${summary.slice(
-        0,
-        summary.indexOf(" ", maxLength)
-      )}</article>
-			<p class="read" onclick="Episodes.readMore()">Read more</p>
-			<span style="display: none;">${summary.slice(
-        summary.indexOf(" ", maxLength)
-      )}</span>
-			<p class="read" onclick="Episodes.readLess()" style="display: none;">Read less</p>`;
+      str += `<article class="episodeArticle" id="croppedText${episodeCode}">${slicedSummary}...</article>
+			<p class="read" onclick="Episodes.readMore('${episodeCode}')" id="readMore${episodeCode}">Read more</p>
+			<article class="episodeArticle" id="fullText${episodeCode}" style="display: none;">${summary}</article>
+			<p class="read" onclick="Episodes.readLess('${episodeCode}')" id="readLess${episodeCode}" style="display: none;">Read less</p>`;
     }
     // Check if comments already stored in session storage; if they are, render them
     if (sessionStorage.getItem(`${seriesId}${episodeCode}`) !== null) {
