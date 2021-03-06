@@ -205,9 +205,9 @@ let Episodes = {
       str += `<article class="episodeArticle">${summary}</article>`;
     } else {
       str += `<article class="episodeArticle" id="croppedText${episodeCode}">${slicedSummary}...</article>
-			<p class="read" onclick="Episodes.readMore('${episodeCode}')" id="readMore${episodeCode}">Read more</p>
-			<article class="episodeArticle" id="fullText${episodeCode}" style="display: none;">${summary}</article>
-			<p class="read" onclick="Episodes.readLess('${episodeCode}')" id="readLess${episodeCode}" style="display: none;">Read less</p>`;
+		<p class="read" onclick="Episodes.readMore('${episodeCode}')" id="readMore${episodeCode}">Read more</p>
+		<article class="episodeArticle" id="fullText${episodeCode}" style="display: none;">${summary}</article>
+		<p class="read" onclick="Episodes.readLess('${episodeCode}')" id="readLess${episodeCode}" style="display: none;">Read less</p>`;
     }
     // Check if comments already stored in session storage; if they are, render them
     if (sessionStorage.getItem(`${seriesId}${episodeCode}`) !== null) {

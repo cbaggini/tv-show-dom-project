@@ -164,7 +164,16 @@ let Series = {
 
   // Function to sort series by rating
   ratingSortArr: function (arr) {
-    return arr.sort((a, b) => a.rating.average < b.rating.average);
+    const sortedArr = arr.sort((a, b) => {
+      if (a.rating.average < b.rating.average) {
+        return 1;
+      } else if (a.rating.average > b.rating.average) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+    return sortedArr;
   },
 
   // Search series
@@ -204,10 +213,10 @@ let Series = {
           el.style.order = `${i + 1}`;
           el.style.display = "flex";
         }
-        Series.loadSeriesFilter(seriesList);
+        Series.loadSeriesFilter(filteredSeries);
         selected.innerHTML = `found ${filteredSeries.length} shows`;
-        Series.alphabeticSort(seriesList);
-        Series.ratingSort(seriesList);
+        Series.alphabeticSort(filteredSeries);
+        Series.ratingSort(filteredSeries);
       });
   },
 
