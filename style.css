@@ -45,6 +45,10 @@ input {
   margin-left: 2rem;
 }
 
+#seriesFilter {
+  width: 250px;
+}
+
 #alphabetic,
 #rating {
   margin-left: 2rem;
